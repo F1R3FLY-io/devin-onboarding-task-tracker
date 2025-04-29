@@ -116,19 +116,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     try {
+      console.log('Login attempt with:', formData.email);
+      console.log('API URL:', `${import.meta.env.VITE_API_URL}/auth`);
+      
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/auth`,
         formData,
         config
       );
 
+      console.log('Login response:', res.data);
+      
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: res.data
       });
 
+      console.log('Token after dispatch:', localStorage.getItem('token'));
+      setAuthToken(res.data.token);
+      console.log('Auth token set in axios headers');
+      
       await loadUser();
     } catch (err: any) {
+      console.error('Login error:', err.response?.data || err.message);
       dispatch({
         type: 'LOGIN_FAIL',
         payload: err.response?.data.msg || 'Login failed'
