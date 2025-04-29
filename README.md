@@ -1,63 +1,91 @@
-# devin-onboarding-task-tracker
-A great one-day test project for a junior full-stack developer that’s balanced in complexity is a “Task Tracker with Authentication”. It’s simple enough to complete in a day but complex enough to showcase skill.
+# Task Tracker Application
 
-# 📝 Task Tracker - Onboarding Project
+A full-stack task management application with user authentication, built using the MERN stack (MongoDB, Express.js, React, Node.js).
 
-Welcome to the Task Tracker onboarding challenge! This is a one-day project designed to evaluate your full-stack development skills across both frontend and backend domains. Please read the instructions carefully before you begin.
+## 📝 Features
 
----
-
-## 🚀 Objective
-
-Build a basic Task Tracker web app that allows users to:
-
-- Register and log in
+- User authentication (register, login, logout)
 - Create, read, update, and delete tasks
-- Each task should include: `title`, `description`, `due date`, and `status` (`pending` / `completed`)
-- Users should only see and manage their own tasks
+- Each task includes: `title`, `description`, `due date`, and `status` (`pending` / `completed`)
+- Users can only see and manage their own tasks
+- Responsive UI with Tailwind CSS
 
----
+## 🧰 Tech Stack
 
-## 🧰 Tech Requirements
+- **Frontend**: React with TypeScript, Context API for state management, Tailwind CSS
+- **Backend**: Express.js, Node.js
+- **Database**: MongoDB
+- **Authentication**: JWT (JSON Web Tokens)
 
-You are free to use any stack you're comfortable with, but your solution **must** include:
+## ✅ Implemented Features
 
-- A **backend API** (REST or GraphQL) with authentication
-- A **frontend** that consumes this API
-- **Persistent storage** (e.g., SQLite, PostgreSQL, MongoDB)
-- Clear project structure and readable code
+- [x] Register new users
+- [x] Login/logout functionality with JWT
+- [x] Create new task
+- [x] View list of tasks (filtered by user)
+- [x] Edit existing task
+- [x] Delete task
+- [x] Mark task as completed or pending
 
----
+## 🏗️ Project Structure
 
-## ✅ Evaluation Criteria
+### Backend
 
-- Functional and bug-free implementation
-- Code quality, structure, and clarity
-- Secure authentication and proper access control
-- UI/UX design (basic but clean is fine)
-- README quality and setup instructions
-- Time management and completeness
+```
+task-tracker/backend/
+├── middleware/     # Authentication middleware
+├── models/         # MongoDB models (User, Task)
+├── routes/         # API routes
+├── server.js       # Express server setup
+└── .env            # Environment variables
+```
 
----
+### Frontend
 
-## 🛠️ Suggested Features
-
-- [ ] Register new users
-- [ ] Login/logout functionality (JWT or sessions)
-- [ ] Create new task
-- [ ] View list of tasks (filtered by user)
-- [ ] Edit existing task
-- [ ] Delete task
-- [ ] Mark task as completed or pending
-
----
+```
+task-tracker-frontend/
+├── src/
+│   ├── components/     # UI components
+│   ├── context/        # Context API for state management
+│   ├── pages/          # Page components
+│   └── utils/          # Utility functions
+├── .env                # Environment variables
+└── tailwind.config.js  # Tailwind CSS configuration
+```
 
 ## ⚙️ Setup Instructions
 
-Please include clear instructions in your submitted repo for how to:
+For detailed setup instructions, please refer to the [SETUP.md](SETUP.md) file.
 
-1. Clone and install dependencies
-2. Set up the database
-3. Run backend server
-4. Run frontend app
-5. Test user login and task creation
+### Quick Start
+
+1. Clone the repository
+2. Set up the backend:
+   ```
+   cd task-tracker/backend
+   npm install
+   ```
+3. Configure environment variables in `.env`
+4. Start the backend server:
+   ```
+   npm run dev
+   ```
+5. Set up the frontend:
+   ```
+   cd ../../task-tracker-frontend
+   npm install --legacy-peer-deps
+   ```
+6. Configure environment variables in `.env`
+7. Start the frontend development server:
+   ```
+   npm run dev
+   ```
+8. Access the application at `http://localhost:5173`
+
+## 📋 Testing
+
+The application has been thoroughly tested to ensure:
+- Authentication works correctly
+- Tasks are correctly CRUDable per user
+- UI updates in real-time with API results
+- All required features are implemented and working as expected
