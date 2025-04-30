@@ -111,9 +111,7 @@ const RankingLists: React.FC<RankingListsProps> = ({ lists }) => {
               </button>
             </div>
           </div>
-          <p className="text-sm text-gray-600 mt-1">
-            Mode: {list.mode.charAt(0).toUpperCase() + list.mode.slice(1)}
-          </p>
+          {/* Mode field hidden as requested */}
         </div>
       ))}
     </div>
