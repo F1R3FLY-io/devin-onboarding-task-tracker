@@ -41,16 +41,27 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
+    end: (item, monitor) => {
+      if (!monitor.didDrop()) {
+      }
+    }
   });
 
-  const [, drop] = useDrop({
+  const [{ isOver }, drop] = useDrop({
     accept: ItemType,
     hover: (draggedItem: { index: number }) => {
-      if (draggedItem.index !== index) {
-        moveItem(draggedItem.index, index);
-        draggedItem.index = index;
+      try {
+        if (draggedItem.index !== index) {
+          moveItem(draggedItem.index, index);
+          draggedItem.index = index;
+        }
+      } catch (error) {
+        console.error('Error during drag hover:', error);
       }
     },
+    collect: (monitor) => ({
+      isOver: monitor.isOver()
+    })
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -84,7 +95,12 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       ref={(node) => drag(drop(node))}
       className={`flex items-center p-3 mb-2 bg-white rounded shadow-sm ${
         isDragging ? 'opacity-50' : ''
-      }`}
+      } ${isOver ? 'border-2 border-blue-400' : ''}`}
+      style={{ 
+        cursor: 'grab',
+        transition: 'all 0.2s ease',
+        boxShadow: isDragging ? '0 5px 10px rgba(0,0,0,0.2)' : '',
+      }}
     >
       <div className="flex-shrink-0 w-16 mr-3">
         <input
