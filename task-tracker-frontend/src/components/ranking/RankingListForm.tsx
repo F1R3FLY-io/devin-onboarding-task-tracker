@@ -79,11 +79,11 @@ const RankingListForm: React.FC<RankingListFormProps> = ({ onClose }) => {
       </div>
       <div className="mb-4">
         <p className="text-sm text-gray-600 mb-2">
-          In this list, items with higher ratings will be ranked higher. 
-          The system will automatically adjust values to prevent duplicates.
+          Items with higher values will appear at the top of the list.
+          Values are automatically adjusted to prevent duplicates.
         </p>
         <p className="text-xs text-gray-500">
-          Values range from 0-100, with 100 being the highest rating and rank.
+          Values range from 0-100, with 100 being the highest.
         </p>
       </div>
       <div className="flex items-center justify-between">
