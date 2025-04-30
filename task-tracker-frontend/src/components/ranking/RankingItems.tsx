@@ -152,7 +152,8 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
     deleteItem, 
     setCurrentItem, 
     resetItemValues,
-    addItemBetween
+    addItemBetween,
+    addItem
   } = rankingContext;
 
   const [showItemForm, setShowItemForm] = useState(false);
@@ -163,21 +164,23 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
   }, [items]);
 
   const moveItem = (dragIndex: number, hoverIndex: number) => {
-    const draggedItem = localItems[dragIndex];
-    const updatedItems = [...localItems];
-    
-    updatedItems.splice(dragIndex, 1);
-    updatedItems.splice(hoverIndex, 0, draggedItem);
-    
-    const finalItems = updateItemValues(updatedItems, mode);
-    
-    setLocalItems(finalItems);
-    
-    finalItems.forEach(item => {
-      if (item.value !== items.find(i => i._id === item._id)?.value) {
-        updateItem(item);
-      }
-    });
+    try {
+      const draggedItem = localItems[dragIndex];
+      const updatedItems = [...localItems];
+      
+      updatedItems.splice(dragIndex, 1);
+      updatedItems.splice(hoverIndex, 0, draggedItem);
+      
+      setLocalItems(updatedItems);
+      
+      const finalItems = updateItemValues(updatedItems, mode);
+      
+      setLocalItems(finalItems);
+      
+      resetItemValues(listId);
+    } catch (error) {
+      console.error('Error moving item:', error);
+    }
   };
 
   const updateItemValues = (items: RankingItem[], mode: 'unified'): RankingItem[] => {
@@ -191,19 +194,44 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
   };
 
   const handleValueChange = (id: string, newValue: number) => {
-    const item = items.find(item => item._id === id);
-    if (item) {
-      const valueExists = items.some(i => i._id !== id && i.value === newValue);
-      
-      if (valueExists) {
-        alert('This value is already used by another item. Please choose a different value.');
+    try {
+      if (newValue < 0 || newValue > 100) {
+        alert('Value must be between 0 and 100.');
         return;
+      }
+
+      const item = items.find(item => item._id === id);
+      if (!item) return;
+      
+      const conflictingItem = items.find(i => i._id !== id && i.value === newValue);
+      
+      if (conflictingItem) {
+        const updatedItems = [...items];
+        const itemIndex = updatedItems.findIndex(i => i._id === id);
+        const conflictIndex = updatedItems.findIndex(i => i._id === conflictingItem._id);
+        
+        if (newValue > item.value) {
+          updateItem({
+            ...conflictingItem,
+            value: Math.max(0, newValue - 1)
+          });
+        } else {
+          updateItem({
+            ...conflictingItem,
+            value: Math.min(100, newValue + 1)
+          });
+        }
       }
       
       updateItem({
         ...item,
         value: newValue
       });
+      
+      setLocalItems([...items].sort((a, b) => b.value - a.value));
+    } catch (error) {
+      console.error('Error changing value:', error);
+      alert('An error occurred while updating the value. Please try again.');
     }
   };
 
@@ -237,20 +265,38 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
   };
 
   const handleAddBetween = (index: number) => {
-    const text = prompt('Enter text for the new item:');
-    if (text && text.trim() !== '') {
-      let beforeValue, afterValue;
+    try {
+      const text = prompt('Enter text for the new item:');
+      if (!text || text.trim() === '') return;
       
-      if (index === 0 && localItems.length > 0) {
-        afterValue = localItems[0].value;
-      } else if (index === localItems.length && localItems.length > 0) {
-        beforeValue = localItems[localItems.length - 1].value;
-      } else if (localItems.length >= 2) {
-        beforeValue = localItems[index - 1].value;
-        afterValue = localItems[index].value;
+      let newValue: number;
+      
+      if (localItems.length === 0) {
+        newValue = 50;
+      } else if (index === 0) {
+        newValue = Math.min(100, localItems[0].value + 5);
+      } else if (index >= localItems.length) {
+        newValue = Math.max(0, localItems[localItems.length - 1].value - 5);
+      } else {
+        const beforeValue = localItems[index - 1].value;
+        const afterValue = localItems[index].value;
+        newValue = (beforeValue + afterValue) / 2;
       }
       
-      addItemBetween(text, listId, beforeValue, afterValue);
+      const newItem = {
+        text,
+        value: newValue,
+        taskId: null
+      };
+      
+      addItem(newItem, listId);
+      
+      setTimeout(() => {
+        resetItemValues(listId);
+      }, 500);
+    } catch (error) {
+      console.error('Error adding item between:', error);
+      alert('An error occurred while adding the item. Please try again.');
     }
   };
 
