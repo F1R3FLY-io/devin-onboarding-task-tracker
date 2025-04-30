@@ -18,21 +18,29 @@ const ValueRank = () => {
     items, 
     getLists, 
     getItems, 
-    loading: rankingLoading 
+    loading: rankingLoading,
+    error 
   } = rankingContext;
+
+  console.log('ValueRank - Auth State:', { isAuthenticated, authLoading });
+  console.log('ValueRank - Ranking State:', { lists, currentList, rankingLoading });
 
   const [showListForm, setShowListForm] = useState(false);
 
   useEffect(() => {
+    console.log('ValueRank - Auth Effect triggered', { isAuthenticated, authLoading });
     if (!isAuthenticated && !authLoading) {
+      console.log('ValueRank - Redirecting to login');
       navigate('/login');
     } else if (isAuthenticated) {
+      console.log('ValueRank - Fetching lists');
       getLists();
     }
   }, [isAuthenticated, authLoading, navigate]);
 
   useEffect(() => {
     if (currentList) {
+      console.log('ValueRank - Fetching items for list:', currentList._id);
       getItems(currentList._id);
     }
   }, [currentList]);
@@ -42,7 +50,13 @@ const ValueRank = () => {
   };
 
   if (authLoading || (isAuthenticated === null)) {
+    console.log('ValueRank - Loading state, waiting for authentication');
     return <div className="text-center py-10">Loading...</div>;
+  }
+  
+  if (error) {
+    console.log('ValueRank - Error state:', error);
+    return <div className="text-center py-10 text-red-600">Error: {error}</div>;
   }
 
   return (

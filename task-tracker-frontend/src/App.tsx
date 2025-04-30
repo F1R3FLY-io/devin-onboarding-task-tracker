@@ -14,6 +14,8 @@ if (localStorage.token) {
 }
 
 const App = () => {
+  console.log('App - Rendering with routes');
+  
   return (
     <AuthProvider>
       <RankingProvider>

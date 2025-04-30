@@ -90,14 +90,20 @@ export const RankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [state, dispatch] = useReducer(rankingReducer, initialState);
 
   const getLists = async () => {
+    console.log('RankingContext - Fetching lists');
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/rankinglists`);
+      const apiUrl = `${import.meta.env.VITE_API_URL}/rankinglists`;
+      console.log('RankingContext - API URL:', apiUrl);
+      
+      const res = await axios.get(apiUrl);
+      console.log('RankingContext - Lists response:', res.data);
 
       dispatch({
         type: 'GET_LISTS',
         payload: res.data
       });
     } catch (err: any) {
+      console.error('RankingContext - Error fetching lists:', err);
       dispatch({
         type: 'RANKING_ERROR',
         payload: err.response?.data.msg || 'Error fetching ranking lists'
@@ -106,6 +112,7 @@ export const RankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const addList = async (list: Omit<RankingList, '_id' | 'user' | 'createdAt'>) => {
+    console.log('RankingContext - Adding list:', list);
     const config = {
       headers: {
         'Content-Type': 'application/json'
@@ -113,17 +120,22 @@ export const RankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     try {
+      const apiUrl = `${import.meta.env.VITE_API_URL}/rankinglists`;
+      console.log('RankingContext - Add list API URL:', apiUrl);
+      
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/rankinglists`,
+        apiUrl,
         list,
         config
       );
+      console.log('RankingContext - Add list response:', res.data);
 
       dispatch({
         type: 'ADD_LIST',
         payload: res.data
       });
     } catch (err: any) {
+      console.error('RankingContext - Error adding list:', err);
       dispatch({
         type: 'RANKING_ERROR',
         payload: err.response?.data.msg || 'Error adding ranking list'
@@ -185,14 +197,20 @@ export const RankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const getItems = async (listId: string) => {
+    console.log('RankingContext - Fetching items for list:', listId);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/rankingitems/${listId}`);
+      const apiUrl = `${import.meta.env.VITE_API_URL}/rankingitems/${listId}`;
+      console.log('RankingContext - Items API URL:', apiUrl);
+      
+      const res = await axios.get(apiUrl);
+      console.log('RankingContext - Items response:', res.data);
 
       dispatch({
         type: 'GET_ITEMS',
         payload: res.data
       });
     } catch (err: any) {
+      console.error('RankingContext - Error fetching items:', err);
       dispatch({
         type: 'RANKING_ERROR',
         payload: err.response?.data.msg || 'Error fetching items'

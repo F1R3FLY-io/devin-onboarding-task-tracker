@@ -5,8 +5,11 @@ import AuthContext from '../../context/auth/AuthContext';
 const Navbar = () => {
   const authContext = useContext(AuthContext);
   const { isAuthenticated, logout, user } = authContext;
+  
+  console.log('Navbar - Auth State:', { isAuthenticated, user });
 
   const onLogout = () => {
+    console.log('Navbar - Logout triggered');
     logout();
   };
 
