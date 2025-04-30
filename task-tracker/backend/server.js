@@ -26,6 +26,6 @@ app.use('/api/rankingitems', require('./routes/rankingItems'));
 
 app.get('/', (req, res) => res.json({ msg: 'Welcome to the Task Tracker API' }));
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
