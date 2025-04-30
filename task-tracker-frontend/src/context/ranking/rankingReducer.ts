@@ -77,7 +77,7 @@ const rankingReducer = (state: RankingState, action: RankingAction): RankingStat
     case 'ADD_ITEM':
       return {
         ...state,
-        items: [...state.items, action.payload].sort((a, b) => a.value - b.value),
+        items: [...state.items, action.payload].sort((a, b) => b.value - a.value),
         loading: false
       };
     case 'UPDATE_ITEM':
@@ -85,7 +85,7 @@ const rankingReducer = (state: RankingState, action: RankingAction): RankingStat
         ...state,
         items: state.items.map(item =>
           item._id === action.payload._id ? action.payload : item
-        ).sort((a, b) => a.value - b.value),
+        ).sort((a, b) => b.value - a.value),
         loading: false
       };
     case 'DELETE_ITEM':

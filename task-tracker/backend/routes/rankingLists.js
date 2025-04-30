@@ -22,7 +22,7 @@ router.post(
     auth,
     [
       check('name', 'Name is required').not().isEmpty(),
-      check('mode', 'Mode must be either incremental or distributed').isIn(['incremental', 'distributed'])
+      check('mode', 'Mode must be unified').isIn(['unified'])
     ]
   ],
   async (req, res) => {
@@ -36,7 +36,7 @@ router.post(
     try {
       const newList = new RankingList({
         name,
-        mode: mode || 'distributed',
+        mode: mode || 'unified',
         user: req.user.id
       });
 

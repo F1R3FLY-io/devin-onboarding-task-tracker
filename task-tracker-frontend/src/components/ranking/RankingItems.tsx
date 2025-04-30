@@ -187,13 +187,15 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
       updatedItems.splice(dragIndex, 1);
       updatedItems.splice(hoverIndex, 0, draggedItem);
       
-      setLocalItems(updatedItems);
-      
       const finalItems = calculateNonConflictingValues(updatedItems);
-      
       setLocalItems(finalItems);
       
-      resetItemValues(listId);
+      finalItems.forEach(updatedItem => {
+        const originalItem = items.find(i => i._id === updatedItem._id);
+        if (originalItem && Math.abs(originalItem.value - updatedItem.value) > 0.001) {
+          updateItem(updatedItem);
+        }
+      });
     } catch (error) {
       console.error('Error moving item:', error);
     }
