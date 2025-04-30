@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import AuthContext from '../context/auth/AuthContext';
 
 const Login = () => {
@@ -34,10 +34,26 @@ const Login = () => {
     }
   };
 
+  const isNotRegisteredError = error && error.includes('Please register first');
+
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-64px)]">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-center mb-6">Account Login</h1>
+        
+        {error && (
+          <div className={`p-3 mb-4 rounded ${isNotRegisteredError ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700'}`}>
+            {error}
+            {isNotRegisteredError && (
+              <div className="mt-2">
+                <Link to="/register" className="text-blue-600 hover:underline font-medium">
+                  Click here to register
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
+        
         <form onSubmit={onSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
