@@ -24,7 +24,9 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
 
   const formatDate = (dateString: string) => {
     try {
-      return format(new Date(dateString), 'MMMM dd, yyyy');
+      const dateWithTime = dateString.includes('T') ? dateString : `${dateString}T00:00:00`;
+      const date = new Date(dateWithTime);
+      return format(date, 'MMMM dd, yyyy h:mm a');
     } catch (error) {
       return dateString;
     }

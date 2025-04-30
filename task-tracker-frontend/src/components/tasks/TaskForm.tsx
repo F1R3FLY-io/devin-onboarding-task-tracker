@@ -14,10 +14,19 @@ const TaskForm = () => {
 
   useEffect(() => {
     if (current !== null) {
+      let formattedDate = '';
+      try {
+        const date = new Date(current.dueDate);
+        formattedDate = date.toISOString().substring(0, 16);
+      } catch (error) {
+        console.error('Error formatting date:', error);
+        formattedDate = '';
+      }
+      
       setTask({
         title: current.title,
         description: current.description,
-        dueDate: current.dueDate.substring(0, 10),
+        dueDate: formattedDate,
         status: current.status
       });
     } else {
@@ -88,7 +97,7 @@ const TaskForm = () => {
           Due Date
         </label>
         <input
-          type="date"
+          type="datetime-local"
           name="dueDate"
           value={dueDate}
           onChange={onChange}
