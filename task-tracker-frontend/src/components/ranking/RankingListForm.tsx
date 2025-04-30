@@ -10,25 +10,22 @@ const RankingListForm: React.FC<RankingListFormProps> = ({ onClose }) => {
   const { addList, updateList, currentList, clearCurrentList } = rankingContext;
 
   const [list, setList] = useState({
-    name: '',
-    mode: 'unified'
+    name: ''
   });
 
   useEffect(() => {
     if (currentList !== null) {
       setList({
-        name: currentList.name,
-        mode: 'unified' // Always use unified mode
+        name: currentList.name
       });
     } else {
       setList({
-        name: '',
-        mode: 'unified'
+        name: ''
       });
     }
   }, [currentList]);
 
-  const { name, mode } = list;
+  const { name } = list;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setList({ ...list, [e.target.name]: e.target.value });
@@ -45,13 +42,13 @@ const RankingListForm: React.FC<RankingListFormProps> = ({ onClose }) => {
     if (currentList === null) {
       addList({
         name,
-        mode: 'unified'
+        mode: 'unified' // Keep mode in API call but hide from UI
       });
     } else {
       updateList({
         ...currentList,
         name,
-        mode: 'unified'
+        mode: 'unified' // Keep mode in API call but hide from UI
       });
     }
 
@@ -88,7 +85,6 @@ const RankingListForm: React.FC<RankingListFormProps> = ({ onClose }) => {
         <p className="text-xs text-gray-500">
           Values range from 0-100, with 100 being the highest rating and rank.
         </p>
-        <input type="hidden" name="mode" value="unified" />
       </div>
       <div className="flex items-center justify-between">
         <button
