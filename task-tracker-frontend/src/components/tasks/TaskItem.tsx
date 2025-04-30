@@ -1,25 +1,27 @@
 import React, { useContext } from 'react';
 import { format } from 'date-fns';
-import TaskContext from '../../context/task/TaskContext';
+import TaskContext, { Task } from '../../context/task/TaskContext';
 
 type TaskProps = {
-  task: {
-    _id: string;
-    title: string;
-    description: string;
-    dueDate: string;
-    status: 'pending' | 'completed';
-  };
+  task: Task;
 };
 
 const TaskItem: React.FC<TaskProps> = ({ task }) => {
   const taskContext = useContext(TaskContext);
-  const { deleteTask, setCurrent, clearCurrent } = taskContext;
+  const { deleteTask, setCurrent, clearCurrent, updateTask } = taskContext;
   const { _id, title, description, dueDate, status } = task;
 
   const onDelete = () => {
     deleteTask(_id);
     clearCurrent();
+  };
+
+  const toggleStatus = () => {
+    const updatedTask: Task = {
+      ...task,
+      status: status === 'pending' ? 'completed' : 'pending'
+    };
+    updateTask(updatedTask);
   };
 
   const formatDate = (dateString: string) => {
@@ -40,9 +42,12 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
         <strong>Due Date:</strong> {formatDate(dueDate)}
       </p>
       <p className="text-sm mb-3">
-        <span className={`px-2 py-1 rounded-full text-white ${status === 'completed' ? 'bg-green-500' : 'bg-yellow-500'}`}>
+        <button 
+          onClick={toggleStatus}
+          className={`px-2 py-1 rounded-full text-white ${status === 'completed' ? 'bg-green-500 hover:bg-green-600' : 'bg-yellow-500 hover:bg-yellow-600'}`}
+        >
           {status.charAt(0).toUpperCase() + status.slice(1)}
-        </span>
+        </button>
       </p>
       <div className="flex justify-end">
         <button

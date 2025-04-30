@@ -9,11 +9,15 @@ task-tracker/
 │   │   └── auth.js          # Authentication middleware
 │   ├── models/              # Mongoose data models
 │   │   ├── User.js          # User model
-│   │   └── Task.js          # Task model
+│   │   ├── Task.js          # Task model with list associations
+│   │   ├── RankingList.js   # Ranking list model
+│   │   └── RankingItem.js   # Ranking item model with task associations
 │   ├── routes/              # API routes
 │   │   ├── auth.js          # Authentication routes
 │   │   ├── users.js         # User management routes
-│   │   └── tasks.js         # Task management routes
+│   │   ├── tasks.js         # Task management routes
+│   │   ├── rankingLists.js  # Ranking list management routes
+│   │   └── rankingItems.js  # Ranking item management routes
 │   ├── .env                 # Environment variables
 │   ├── package.json         # Backend dependencies
 │   └── server.js            # Express server setup
@@ -24,21 +28,30 @@ task-tracker/
     │   ├── components/      # React components
     │   │   ├── layout/      # Layout components
     │   │   │   └── Navbar.tsx  # Navigation bar
-    │   │   └── tasks/       # Task-related components
-    │   │       ├── TaskForm.tsx  # Form for creating/editing tasks
-    │   │       ├── TaskItem.tsx  # Individual task display
-    │   │       └── TaskList.tsx  # List of tasks
+    │   │   ├── tasks/       # Task-related components
+    │   │   │   ├── TaskForm.tsx  # Form for creating/editing tasks with list associations
+    │   │   │   ├── TaskItem.tsx  # Individual task display with status toggle
+    │   │   │   └── TaskList.tsx  # List of tasks
+    │   │   └── ranking/     # Ranking-related components
+    │   │       ├── RankingListForm.tsx  # Form for creating/editing ranking lists
+    │   │       ├── RankingLists.tsx  # List of ranking lists with inline renaming
+    │   │       ├── RankingItems.tsx  # Draggable ranking items
+    │   │       └── RankingItemForm.tsx  # Form with searchable task dropdown
     │   ├── context/         # Context API for state management
     │   │   ├── auth/        # Authentication context
     │   │   │   ├── AuthContext.tsx  # Auth context provider
     │   │   │   └── authReducer.ts   # Auth state reducer
-    │   │   └── task/        # Task management context
-    │   │       ├── TaskContext.tsx  # Task context provider
-    │   │       └── taskReducer.ts   # Task state reducer
+    │   │   ├── task/        # Task management context
+    │   │   │   ├── TaskContext.tsx  # Task context with list associations
+    │   │   │   └── taskReducer.ts   # Task state reducer
+    │   │   └── ranking/     # Ranking management context
+    │   │       ├── RankingContext.tsx  # Ranking context provider
+    │   │       └── rankingReducer.ts   # Ranking state reducer
     │   ├── pages/           # Page components
     │   │   ├── Home.tsx     # Dashboard page
     │   │   ├── Login.tsx    # Login page
-    │   │   └── Register.tsx # Registration page
+    │   │   ├── Register.tsx # Registration page
+    │   │   └── ValueRank.tsx # Ranking/rating page
     │   ├── utils/           # Utility functions
     │   │   └── setAuthToken.ts  # Set auth token in headers
     │   ├── App.tsx          # Main application component
@@ -67,6 +80,7 @@ task-tracker/
 - **Tailwind CSS**: Utility-first CSS framework
 - **date-fns**: Date manipulation library
 - **React Context API**: State management
+- **React DnD**: Drag and drop functionality for ranking items
 
 ## Security and Authentication Approach
 
@@ -152,6 +166,68 @@ The application implements JWT (JSON Web Token) based authentication:
     enum: ['pending', 'completed'],
     default: 'pending'
   },
+  listIds: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'rankinglist',
+    default: []
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+}
+```
+
+#### RankingList Model
+```javascript
+{
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users',
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  mode: {
+    type: String,
+    enum: ['unified'],
+    default: 'unified'
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+}
+```
+
+#### RankingItem Model
+```javascript
+{
+  list: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'rankinglist',
+    required: true
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users',
+    required: true
+  },
+  text: {
+    type: String,
+    required: true
+  },
+  value: {
+    type: Number,
+    required: true
+  },
+  taskId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'task',
+    default: null
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -174,6 +250,20 @@ The application implements JWT (JSON Web Token) based authentication:
 - `PUT /api/tasks/:id`: Update an existing task
 - `DELETE /api/tasks/:id`: Delete a task
 
+#### Ranking List Routes
+- `GET /api/rankinglists`: Get all ranking lists for authenticated user
+- `POST /api/rankinglists`: Create a new ranking list
+- `PUT /api/rankinglists/:id`: Update an existing ranking list
+- `DELETE /api/rankinglists/:id`: Delete a ranking list
+
+#### Ranking Item Routes
+- `GET /api/rankingitems/:listId`: Get all ranking items for a specific list
+- `POST /api/rankingitems/:listId`: Create a new ranking item
+- `PUT /api/rankingitems/:id`: Update an existing ranking item
+- `DELETE /api/rankingitems/:id`: Delete a ranking item
+- `POST /api/rankingitems/:listId/addBetween`: Add a new item between two existing items
+- `POST /api/rankingitems/:listId/reset`: Reset item values in a list
+
 ## Frontend State Management
 
 The application uses React Context API for state management:
@@ -189,6 +279,14 @@ The application uses React Context API for state management:
    - Provides CRUD operations for tasks
    - Filters tasks by authenticated user
    - Handles task-related errors
+   - Supports list associations for tasks
+
+3. **RankingContext**:
+   - Manages ranking lists and items
+   - Provides CRUD operations for lists and items
+   - Handles drag and drop functionality
+   - Manages value calculations for ranking items
+   - Supports task associations for ranking items
 
 ## Responsive Design Strategy
 

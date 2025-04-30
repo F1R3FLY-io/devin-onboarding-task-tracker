@@ -2,7 +2,7 @@ import React, { createContext, useReducer } from 'react';
 import axios from 'axios';
 import taskReducer from './taskReducer';
 
-type Task = {
+export type Task = {
   _id: string;
   title: string;
   description: string;
