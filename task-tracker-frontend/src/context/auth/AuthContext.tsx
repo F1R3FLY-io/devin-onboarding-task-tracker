@@ -63,13 +63,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [state, dispatch] = useReducer(authReducer, initialState);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+  
   const loadUser = async () => {
     if (localStorage.token) {
       setAuthToken(localStorage.token);
     }
 
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/auth`);
+      const res = await axios.get(`${API_URL}/auth`);
 
       dispatch({
         type: 'USER_LOADED',
@@ -89,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/users`,
+        `${API_URL}/users`,
         formData,
         config
       );
@@ -117,10 +119,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       console.log('Login attempt with:', formData.email);
-      console.log('API URL:', `${import.meta.env.VITE_API_URL}/auth`);
+      console.log('API URL:', `${API_URL}/auth`);
       
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth`,
+        `${API_URL}/auth`,
         formData,
         config
       );
