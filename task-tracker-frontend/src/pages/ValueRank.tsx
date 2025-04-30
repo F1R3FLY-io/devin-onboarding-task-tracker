@@ -78,11 +78,23 @@ const ValueRank = () => {
           <p>{error}</p>
         </div>
         <button 
-          onClick={() => getLists()} 
+          onClick={() => {
+            rankingContext.clearErrors();
+            
+            if (currentList) {
+              getItems(currentList._id);
+            } else {
+              getLists();
+            }
+          }} 
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           Try Again
         </button>
+        <div className="mt-4 text-sm text-gray-600">
+          <p>If you were trying to drag and drop items, please try again more slowly.</p>
+          <p>Remember that items are automatically sorted by their value (highest at top).</p>
+        </div>
       </div>
     );
   }
