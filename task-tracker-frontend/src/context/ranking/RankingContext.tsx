@@ -332,10 +332,15 @@ export const RankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         payload: res.data
       });
     } catch (err: any) {
+      console.error('Error adding item between values:', err.response?.data || err.message);
       dispatch({
         type: 'RANKING_ERROR',
         payload: err.response?.data.msg || 'Error adding item between values'
       });
+      
+      setTimeout(() => {
+        dispatch({ type: 'CLEAR_ERRORS' });
+      }, 5000);
     }
   };
 
