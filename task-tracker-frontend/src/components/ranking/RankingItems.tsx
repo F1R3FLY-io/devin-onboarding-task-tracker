@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import RankingContext, { RankingItem } from '../../context/ranking/RankingContext';
+import TaskContext from '../../context/task/TaskContext';
 import RankingItemForm from './RankingItemForm';
 
 type RankingItemsProps = {
@@ -36,6 +37,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
   items
 }) => {
   const rankingContext = useContext(RankingContext);
+  const taskContext = useContext(TaskContext);
   
   const [{ isDragging }, drag] = useDrag({
     type: ItemType,
@@ -125,7 +127,11 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       <div className="flex-grow">
         <p className="font-medium">{item.text}</p>
         {item.taskId && (
-          <p className="text-xs text-blue-600">Linked to task</p>
+          <div className="mt-1">
+            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+              {taskContext?.tasks.find(t => t._id === item.taskId)?.title || 'Linked to task'}
+            </span>
+          </div>
         )}
       </div>
       <div className="flex-shrink-0 flex items-center">
@@ -170,6 +176,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
 
 const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
   const rankingContext = useContext(RankingContext);
+  const taskContext = useContext(TaskContext);
   const { 
     updateItem, 
     deleteItem, 

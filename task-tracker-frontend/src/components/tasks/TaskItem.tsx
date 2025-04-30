@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { format } from 'date-fns';
 import TaskContext, { Task } from '../../context/task/TaskContext';
+import RankingContext from '../../context/ranking/RankingContext';
 
 type TaskProps = {
   task: Task;
@@ -8,8 +9,10 @@ type TaskProps = {
 
 const TaskItem: React.FC<TaskProps> = ({ task }) => {
   const taskContext = useContext(TaskContext);
+  const rankingContext = useContext(RankingContext);
   const { deleteTask, setCurrent, clearCurrent, updateTask } = taskContext;
-  const { _id, title, description, dueDate, status } = task;
+  const { lists } = rankingContext;
+  const { _id, title, description, dueDate, status, listIds = [] } = task;
 
   const onDelete = () => {
     deleteTask(_id);
@@ -34,6 +37,8 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
     }
   };
 
+  const associatedLists = lists.filter(list => listIds.includes(list._id));
+
   return (
     <div className={`card bg-white p-4 rounded shadow-md ${status === 'completed' ? 'border-l-4 border-green-500' : 'border-l-4 border-yellow-500'}`}>
       <h3 className="text-xl font-bold mb-2">{title}</h3>
@@ -49,6 +54,24 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </button>
       </p>
+      
+      {/* Display associated lists */}
+      {associatedLists.length > 0 && (
+        <div className="mb-3">
+          <p className="text-sm text-gray-700 mb-1"><strong>Associated Lists:</strong></p>
+          <div className="flex flex-wrap gap-1">
+            {associatedLists.map(list => (
+              <span 
+                key={list._id} 
+                className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
+              >
+                {list.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+      
       <div className="flex justify-end">
         <button
           onClick={() => setCurrent(task)}

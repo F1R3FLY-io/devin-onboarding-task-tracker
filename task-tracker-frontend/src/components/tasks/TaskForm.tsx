@@ -132,15 +132,13 @@ const TaskForm = () => {
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="status">
           Status
         </label>
-        <select
-          name="status"
-          value={status}
-          onChange={onChange}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        <button
+          type="button"
+          onClick={() => setTask({ ...task, status: status === 'pending' ? 'completed' : 'pending' })}
+          className={`px-2 py-1 rounded-full text-white ${status === 'completed' ? 'bg-green-500 hover:bg-green-600' : 'bg-yellow-500 hover:bg-yellow-600'}`}
         >
-          <option value="pending">Pending</option>
-          <option value="completed">Completed</option>
-        </select>
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </button>
       </div>
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="listIds">

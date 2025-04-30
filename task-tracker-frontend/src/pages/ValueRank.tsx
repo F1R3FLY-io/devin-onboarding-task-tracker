@@ -171,7 +171,7 @@ const ValueRank = () => {
           <>
             <h2 className="text-2xl font-bold mb-4">{currentList.name}</h2>
             <p className="mb-4 text-gray-600">
-              Unified ranking and rating system - higher values (0-100) mean higher rankings
+              Higher values (0-100) mean higher rankings
             </p>
             <div className="mb-4 bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded text-sm">
               <p><strong>How it works:</strong></p>
