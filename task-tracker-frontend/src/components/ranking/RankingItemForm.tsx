@@ -19,6 +19,8 @@ const RankingItemForm: React.FC<RankingItemFormProps> = ({ listId, onClose }) =>
     value: '',
     taskId: ''
   });
+  
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     if (currentItem !== null) {
@@ -126,19 +128,36 @@ const RankingItemForm: React.FC<RankingItemFormProps> = ({ listId, onClose }) =>
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="taskId">
           Associated Task (Optional)
         </label>
-        <select
-          name="taskId"
-          value={taskId}
-          onChange={onChange}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        >
-          <option value="">None</option>
-          {tasks?.map(task => (
-            <option key={task._id} value={task._id}>
-              {task.title}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search for a task..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-1"
+          />
+          <select
+            name="taskId"
+            value={taskId}
+            onChange={onChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            size={Math.min(5, tasks.filter(task => 
+              searchTerm === '' || task.title.toLowerCase().includes(searchTerm.toLowerCase())
+            ).length + 1)}
+          >
+            <option value="">None</option>
+            {tasks?.filter(task => 
+              searchTerm === '' || task.title.toLowerCase().includes(searchTerm.toLowerCase())
+            ).map(task => (
+              <option key={task._id} value={task._id}>
+                {task.title}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">
+            Type in the search box to filter tasks
+          </p>
+        </div>
       </div>
       <div className="flex items-center justify-between">
         <button
