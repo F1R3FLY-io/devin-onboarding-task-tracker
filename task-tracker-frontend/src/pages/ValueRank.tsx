@@ -70,37 +70,69 @@ const ValueRank = () => {
     );
   }
   
-  if (error) {
-    return (
-      <div className="text-center py-10">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <p className="font-bold">Error</p>
-          <p>{error}</p>
+  const renderErrorNotification = () => {
+    if (!error) return null;
+    
+    if (error.includes('An item with this value already exists')) {
+      return (
+        <div className="fixed top-4 right-4 z-50 max-w-md">
+          <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 px-4 py-3 rounded shadow-lg">
+            <div className="flex justify-between">
+              <p className="font-bold">Note</p>
+              <button 
+                onClick={() => rankingContext.clearErrors()}
+                className="text-yellow-800 hover:text-yellow-600"
+              >
+                ×
+              </button>
+            </div>
+            <p>Values are automatically adjusted to prevent duplicates.</p>
+            <div className="mt-2 text-sm">
+              <p>Items are sorted by their value (highest at top).</p>
+              <p>Each item must have a unique value between 0-100.</p>
+            </div>
+          </div>
         </div>
-        <button 
-          onClick={() => {
-            rankingContext.clearErrors();
-            
-            if (currentList) {
-              getItems(currentList._id);
-            } else {
-              getLists();
-            }
-          }} 
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Try Again
-        </button>
-        <div className="mt-4 text-sm text-gray-600">
-          <p>If you were trying to drag and drop items, please try again more slowly.</p>
-          <p>Remember that items are automatically sorted by their value (highest at top).</p>
+      );
+    }
+    
+    return (
+      <div className="fixed top-4 right-4 z-50 max-w-md">
+        <div className="bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded shadow-lg">
+          <div className="flex justify-between">
+            <p className="font-bold">Error</p>
+            <button 
+              onClick={() => rankingContext.clearErrors()}
+              className="text-red-800 hover:text-red-600"
+            >
+              ×
+            </button>
+          </div>
+          <p>{error}</p>
+          <button 
+            onClick={() => {
+              rankingContext.clearErrors();
+              
+              if (currentList) {
+                getItems(currentList._id);
+              } else {
+                getLists();
+              }
+            }} 
+            className="mt-2 bg-red-100 hover:bg-red-200 text-red-800 font-bold py-1 px-3 rounded text-sm"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
-  }
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Render error notification if there is an error */}
+      {renderErrorNotification()}
+      
       <div className="md:col-span-1">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Your Lists</h2>
@@ -139,8 +171,18 @@ const ValueRank = () => {
           <>
             <h2 className="text-2xl font-bold mb-4">{currentList.name}</h2>
             <p className="mb-4 text-gray-600">
-              Unified ranking and rating system
+              Unified ranking and rating system - higher values (0-100) mean higher rankings
             </p>
+            <div className="mb-4 bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded text-sm">
+              <p><strong>How it works:</strong></p>
+              <ul className="list-disc pl-5 mt-1">
+                <li>Items are automatically sorted by value (highest at top)</li>
+                <li>Each item must have a unique value between 0-100</li>
+                <li>Drag items to reorder them or use the up/down arrows</li>
+                <li>Edit values directly in the number field</li>
+                <li>Values are automatically adjusted to prevent duplicates</li>
+              </ul>
+            </div>
             <RankingItems items={items} listId={currentList._id} mode="unified" />
           </>
         ) : (

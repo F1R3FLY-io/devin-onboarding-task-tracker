@@ -29,12 +29,14 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
   index, 
   moveItem, 
   onEdit, 
-  onDelete, 
+  onDelete,
   onValueChange,
   onMoveUp,
   onMoveDown,
   items
 }) => {
+  const rankingContext = useContext(RankingContext);
+  
   const [{ isDragging }, drag] = useDrag({
     type: ItemType,
     item: { index },
@@ -42,7 +44,12 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       isDragging: monitor.isDragging(),
     }),
     end: (item, monitor) => {
-      if (!monitor.didDrop()) {
+      try {
+        if (!monitor.didDrop()) {
+          rankingContext.clearErrors();
+        }
+      } catch (error) {
+        console.error('Error in drag end:', error);
       }
     }
   });
@@ -181,6 +188,8 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
 
   const moveItem = (dragIndex: number, hoverIndex: number) => {
     try {
+      rankingContext.clearErrors();
+      
       const draggedItem = localItems[dragIndex];
       const updatedItems = [...localItems];
       
@@ -190,12 +199,18 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
       const finalItems = calculateNonConflictingValues(updatedItems);
       setLocalItems(finalItems);
       
-      finalItems.forEach(updatedItem => {
-        const originalItem = items.find(i => i._id === updatedItem._id);
-        if (originalItem && Math.abs(originalItem.value - updatedItem.value) > 0.001) {
-          updateItem(updatedItem);
-        }
-      });
+      Promise.all(
+        finalItems.map(updatedItem => {
+          const originalItem = items.find(i => i._id === updatedItem._id);
+          if (originalItem && Math.abs(originalItem.value - updatedItem.value) > 0.001) {
+            return updateItem(updatedItem).catch(err => {
+              console.error('Error updating item:', err);
+              return null;
+            });
+          }
+          return Promise.resolve(null);
+        })
+      );
     } catch (error) {
       console.error('Error moving item:', error);
     }
@@ -209,18 +224,20 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
       }));
     }
     
-    const sortedItems = [...items];
+    const itemsCopy = [...items];
     
-    const step = 100 / (sortedItems.length - 1);
+    const step = items.length > 1 ? 100 / (items.length - 1) : 50;
     
-    return sortedItems.map((item, index) => ({
+    return itemsCopy.map((item, index) => ({
       ...item,
-      value: Math.round((100 - (index * step)) * 100) / 100 // Round to 2 decimal places
+      value: Math.min(100, Math.max(0, Math.round((100 - (index * step)) * 100) / 100))
     }));
   };
 
   const handleValueChange = (id: string, newValue: number) => {
     try {
+      rankingContext.clearErrors(); // Clear any existing errors
+      
       if (newValue < 0 || newValue > 100) {
         alert('Value must be between 0 and 100.');
         return;
@@ -236,78 +253,118 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
       
       updatedItems.sort((a, b) => b.value - a.value);
       
-      const newIndex = updatedItems.findIndex(i => i._id === id);
+      const valueMap = new Map<number, string[]>();
       
-      let hasConflicts = true;
-      let maxIterations = 10; // Prevent infinite loops
+      updatedItems.forEach(item => {
+        const value = Math.round(item.value * 100) / 100; // Round to 2 decimal places
+        if (!valueMap.has(value)) {
+          valueMap.set(value, []);
+        }
+        valueMap.get(value)!.push(item._id);
+      });
       
-      while (hasConflicts && maxIterations > 0) {
-        hasConflicts = false;
-        maxIterations--;
-        
-        const valueMap = new Map<number, string[]>();
-        
-        updatedItems.forEach(item => {
-          const value = Math.round(item.value * 100) / 100; // Round to 2 decimal places
-          if (!valueMap.has(value)) {
-            valueMap.set(value, []);
-          }
-          valueMap.get(value)!.push(item._id);
-        });
-        
-        for (const [value, itemIds] of valueMap.entries()) {
-          if (itemIds.length > 1) {
-            hasConflicts = true;
+      let hasConflicts = false;
+      for (const [value, itemIds] of valueMap.entries()) {
+        if (itemIds.length > 1) {
+          hasConflicts = true;
+          break;
+        }
+      }
+      
+      if (hasConflicts) {
+        if (updatedItems.length <= 10) {
+          let maxIterations = 5; // Prevent infinite loops
+          while (hasConflicts && maxIterations > 0) {
+            hasConflicts = false;
+            maxIterations--;
             
-            const conflictingIndices = itemIds.map(itemId => 
-              updatedItems.findIndex(i => i._id === itemId)
-            ).sort((a, b) => a - b);
+            const valueMap = new Map<number, string[]>();
             
-            for (let i = 1; i < conflictingIndices.length; i++) {
-              const idx = conflictingIndices[i];
-              const prevIdx = conflictingIndices[i - 1];
-              
-              if (updatedItems[idx]._id === id) {
-                updatedItems[prevIdx] = {
-                  ...updatedItems[prevIdx],
-                  value: Math.min(100, value + 0.1)
-                };
-              } else {
-                updatedItems[idx] = {
-                  ...updatedItems[idx],
-                  value: Math.max(0, value - 0.1)
-                };
+            updatedItems.forEach(item => {
+              const value = Math.round(item.value * 100) / 100;
+              if (!valueMap.has(value)) {
+                valueMap.set(value, []);
+              }
+              valueMap.get(value)!.push(item._id);
+            });
+            
+            for (const [value, itemIds] of valueMap.entries()) {
+              if (itemIds.length > 1) {
+                hasConflicts = true;
+                
+                const conflictingIndices = itemIds.map(itemId => 
+                  updatedItems.findIndex(i => i._id === itemId)
+                ).sort((a, b) => a - b);
+                
+                for (let i = 1; i < conflictingIndices.length; i++) {
+                  const idx = conflictingIndices[i];
+                  const prevIdx = conflictingIndices[i - 1];
+                  
+                  if (updatedItems[idx]._id === id) {
+                    updatedItems[prevIdx] = {
+                      ...updatedItems[prevIdx],
+                      value: Math.min(100, value + 1)
+                    };
+                  } else if (updatedItems[prevIdx]._id === id) {
+                    updatedItems[idx] = {
+                      ...updatedItems[idx],
+                      value: Math.max(0, value - 1)
+                    };
+                  } else {
+                    updatedItems[prevIdx] = {
+                      ...updatedItems[prevIdx],
+                      value: Math.min(100, value + 0.5)
+                    };
+                    updatedItems[idx] = {
+                      ...updatedItems[idx],
+                      value: Math.max(0, value - 0.5)
+                    };
+                  }
+                }
               }
             }
+            
+            updatedItems.sort((a, b) => b.value - a.value);
           }
-        }
+        } 
         
-        updatedItems.sort((a, b) => b.value - a.value);
+        if (hasConflicts || updatedItems.length > 10) {
+          const changedItemIndex = updatedItems.findIndex(i => i._id === id);
+          
+          updatedItems = calculateNonConflictingValues(updatedItems);
+        }
       }
       
       setLocalItems(updatedItems);
       
-      updatedItems.forEach(updatedItem => {
-        const originalItem = items.find(i => i._id === updatedItem._id);
-        if (originalItem && Math.abs(originalItem.value - updatedItem.value) > 0.001) {
-          updateItem(updatedItem);
-        }
-      });
+      Promise.all(
+        updatedItems.map(updatedItem => {
+          const originalItem = items.find(i => i._id === updatedItem._id);
+          if (originalItem && Math.abs(originalItem.value - updatedItem.value) > 0.001) {
+            return updateItem(updatedItem).catch(err => {
+              console.error('Error updating item:', err);
+              return null;
+            });
+          }
+          return Promise.resolve(null);
+        })
+      );
       
     } catch (error) {
       console.error('Error changing value:', error);
-      alert('An error occurred while updating the value. Please try again.');
     }
   };
 
   const handleMoveUp = (index: number) => {
     if (index > 0) {
+      rankingContext.clearErrors(); // Clear any existing errors
       moveItem(index, index - 1);
     }
   };
 
   const handleMoveDown = (index: number) => {
     if (index < localItems.length - 1) {
+      rankingContext.clearErrors(); // Clear any existing errors
       moveItem(index, index + 1);
     }
   };
@@ -331,9 +388,10 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
 
   const handleAddBetween = (index: number) => {
     try {
+      rankingContext.clearErrors(); // Clear any existing errors
+      
       const text = prompt('Enter text for the new item:');
       if (!text || text.trim() === '') return;
-      
       
       if (localItems.length === 0) {
         const newItem = {
@@ -357,6 +415,16 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
         const beforeValue = localItems[index - 1].value;
         const afterValue = localItems[index].value;
         
+        if (Math.abs(beforeValue - afterValue) < 0.01) {
+          resetItemValues(listId);
+          setTimeout(() => {
+            const updatedBeforeValue = items[index - 1]?.value || 75;
+            const updatedAfterValue = items[index]?.value || 25;
+            addItemBetween(text, listId, updatedBeforeValue, updatedAfterValue);
+          }, 500);
+          return;
+        }
+        
         addItemBetween(text, listId, beforeValue, afterValue);
       }
       
@@ -365,7 +433,6 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
       }, 500);
     } catch (error) {
       console.error('Error adding item between:', error);
-      alert('An error occurred while adding the item. Please try again.');
     }
   };
 

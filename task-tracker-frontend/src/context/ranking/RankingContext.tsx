@@ -254,11 +254,19 @@ export const RankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         type: 'UPDATE_ITEM',
         payload: res.data
       });
+      
+      return res.data;
     } catch (err: any) {
-      dispatch({
-        type: 'RANKING_ERROR',
-        payload: err.response?.data.msg || 'Error updating item'
-      });
+      console.error('Error updating item:', err.response?.data || err);
+      
+      if (err.response?.data.msg !== 'An item with this value already exists') {
+        dispatch({
+          type: 'RANKING_ERROR',
+          payload: err.response?.data.msg || 'Error updating item'
+        });
+      }
+      
+      throw err;
     }
   };
 
@@ -331,16 +339,29 @@ export const RankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         type: 'ADD_ITEM',
         payload: res.data
       });
+      return res.data;
     } catch (err: any) {
       console.error('Error adding item between values:', err.response?.data || err.message);
-      dispatch({
-        type: 'RANKING_ERROR',
-        payload: err.response?.data.msg || 'Error adding item between values'
-      });
+      
+      if (err.response?.data.msg !== 'An item with this value already exists') {
+        dispatch({
+          type: 'RANKING_ERROR',
+          payload: err.response?.data.msg || 'Error adding item between values'
+        });
+      } else {
+        try {
+          await resetItemValues(listId);
+          dispatch({ type: 'CLEAR_ERRORS' });
+        } catch (resetErr) {
+          console.error('Error resetting values after conflict:', resetErr);
+        }
+      }
       
       setTimeout(() => {
         dispatch({ type: 'CLEAR_ERRORS' });
       }, 5000);
+      
+      throw err; // Re-throw to allow proper error handling in calling code
     }
   };
 
