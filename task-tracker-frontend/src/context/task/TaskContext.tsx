@@ -10,6 +10,7 @@ export type Task = {
   status: 'pending' | 'completed';
   user: string;
   createdAt: string;
+  listIds?: string[];
 };
 
 type TaskState = {

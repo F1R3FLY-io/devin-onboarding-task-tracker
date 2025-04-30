@@ -1,15 +1,21 @@
 import React, { useState, useContext, useEffect } from 'react';
 import TaskContext from '../../context/task/TaskContext';
+import RankingContext from '../../context/ranking/RankingContext';
 
 const TaskForm = () => {
   const taskContext = useContext(TaskContext);
+  const rankingContext = useContext(RankingContext);
+  const { lists } = rankingContext;
   const { addTask, updateTask, current, clearCurrent } = taskContext;
+  
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [task, setTask] = useState({
     title: '',
     description: '',
     dueDate: '',
-    status: 'pending'
+    status: 'pending',
+    listIds: [] as string[]
   });
 
   useEffect(() => {
@@ -27,22 +33,29 @@ const TaskForm = () => {
         title: current.title,
         description: current.description,
         dueDate: formattedDate,
-        status: current.status
+        status: current.status,
+        listIds: current.listIds || []
       });
     } else {
       setTask({
         title: '',
         description: '',
         dueDate: '',
-        status: 'pending'
+        status: 'pending',
+        listIds: []
       });
     }
   }, [current]);
 
-  const { title, description, dueDate, status } = task;
+  const { title, description, dueDate, status, listIds } = task;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setTask({ ...task, [e.target.name]: e.target.value });
+  };
+  
+  const handleListChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+    setTask({ ...task, listIds: selectedOptions });
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -118,6 +131,41 @@ const TaskForm = () => {
           <option value="pending">Pending</option>
           <option value="completed">Completed</option>
         </select>
+      </div>
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="listIds">
+          Associated Lists (Optional)
+        </label>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search for lists..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-1"
+          />
+          <select
+            name="listIds"
+            multiple
+            value={listIds}
+            onChange={handleListChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            size={Math.min(5, lists.filter(list => 
+              searchTerm === '' || list.name.toLowerCase().includes(searchTerm.toLowerCase())
+            ).length)}
+          >
+            {lists?.filter(list => 
+              searchTerm === '' || list.name.toLowerCase().includes(searchTerm.toLowerCase())
+            ).map(list => (
+              <option key={list._id} value={list._id}>
+                {list.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">
+            Hold Ctrl (or Cmd) to select multiple lists
+          </p>
+        </div>
       </div>
       <div className="flex items-center justify-between">
         <button
