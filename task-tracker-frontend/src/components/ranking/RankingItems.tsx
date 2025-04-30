@@ -316,27 +316,31 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
       const text = prompt('Enter text for the new item:');
       if (!text || text.trim() === '') return;
       
-      let newValue: number;
       
       if (localItems.length === 0) {
-        newValue = 50;
+        const newItem = {
+          text,
+          value: 50,
+          taskId: null
+        };
+        
+        addItem(newItem, listId);
       } else if (index === 0) {
-        newValue = Math.min(100, localItems[0].value + 5);
+        const afterValue = localItems[0].value;
+        const beforeValue = Math.min(100, afterValue + 10); // Ensure we don't exceed 100
+        
+        addItemBetween(text, listId, beforeValue, afterValue);
       } else if (index >= localItems.length) {
-        newValue = Math.max(0, localItems[localItems.length - 1].value - 5);
+        const beforeValue = localItems[localItems.length - 1].value;
+        const afterValue = Math.max(0, beforeValue - 10); // Ensure we don't go below 0
+        
+        addItemBetween(text, listId, beforeValue, afterValue);
       } else {
         const beforeValue = localItems[index - 1].value;
         const afterValue = localItems[index].value;
-        newValue = (beforeValue + afterValue) / 2;
+        
+        addItemBetween(text, listId, beforeValue, afterValue);
       }
-      
-      const newItem = {
-        text,
-        value: newValue,
-        taskId: null
-      };
-      
-      addItem(newItem, listId);
       
       setTimeout(() => {
         resetItemValues(listId);
