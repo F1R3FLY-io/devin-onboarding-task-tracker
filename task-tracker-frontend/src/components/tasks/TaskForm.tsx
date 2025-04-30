@@ -61,13 +61,23 @@ const TaskForm = () => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (current === null) {
-      addTask(task);
+      addTask({
+        title: task.title,
+        description: task.description,
+        dueDate: task.dueDate,
+        status: task.status as 'pending' | 'completed',
+        listIds: task.listIds
+      });
     } else {
       updateTask({
-        ...task,
         _id: current._id,
         user: current.user,
-        createdAt: current.createdAt
+        createdAt: current.createdAt,
+        title: task.title,
+        description: task.description,
+        dueDate: task.dueDate,
+        status: task.status as 'pending' | 'completed',
+        listIds: task.listIds
       });
     }
     clearAll();
