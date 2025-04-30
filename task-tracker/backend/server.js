@@ -21,6 +21,8 @@ mongoose
 app.use('/api/users', require('./routes/users'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/tasks', require('./routes/tasks'));
+app.use('/api/rankinglists', require('./routes/rankingLists'));
+app.use('/api/rankingitems', require('./routes/rankingItems'));
 
 app.get('/', (req, res) => res.json({ msg: 'Welcome to the Task Tracker API' }));
 

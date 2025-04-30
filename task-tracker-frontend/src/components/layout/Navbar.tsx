@@ -12,6 +12,12 @@ const Navbar = () => {
 
   const authLinks = (
     <>
+      <li className="mr-4">
+        <Link to="/" className="text-white hover:text-gray-300">Tasks</Link>
+      </li>
+      <li className="mr-4">
+        <Link to="/valuerank" className="text-white hover:text-gray-300">ValueRank</Link>
+      </li>
       <li className="mr-4">Hello {user && user.name}</li>
       <li>
         <a onClick={onLogout} href="#!" className="text-white hover:text-gray-300">
@@ -38,7 +44,7 @@ const Navbar = () => {
         <h1 className="text-white text-xl font-bold">
           <Link to="/">Task Tracker</Link>
         </h1>
-        <ul className="flex">
+        <ul className="flex items-center">
           {isAuthenticated ? authLinks : guestLinks}
         </ul>
       </div>
