@@ -55,32 +55,40 @@ task-tracker-frontend/
 
 ## ⚙️ Setup Instructions
 
-For detailed setup instructions, please refer to the [SETUP.md](SETUP.md) file.
+For detailed setup instructions, please refer to the [SETUP.md](SETUP.md) file. The setup guide includes:
+
+- Prerequisites installation (Node.js, MongoDB)
+- Backend and frontend setup
+- Environment configuration
+- Running the application
+- Troubleshooting common issues
 
 ### Quick Start
 
 1. Clone the repository
 2. Set up the backend:
-   ```
+   ```bash
    cd task-tracker/backend
    npm install
    ```
 3. Configure environment variables in `.env`
 4. Start the backend server:
-   ```
+   ```bash
    npm run dev
    ```
 5. Set up the frontend:
-   ```
+   ```bash
    cd ../../task-tracker-frontend
    npm install --legacy-peer-deps
    ```
 6. Configure environment variables in `.env`
 7. Start the frontend development server:
-   ```
+   ```bash
    npm run dev
    ```
-8. Access the application at `http://localhost:5173`
+8. Access the application at `http://localhost:5174`
+
+**Important Note**: You must register a new account before attempting to login. The application will provide a helpful message if you try to login with an unregistered email.
 
 ## 📋 Testing
 
@@ -89,3 +97,5 @@ The application has been thoroughly tested to ensure:
 - Tasks are correctly CRUDable per user
 - UI updates in real-time with API results
 - All required features are implemented and working as expected
+
+For detailed testing information, see [testing_report.md](testing_report.md).

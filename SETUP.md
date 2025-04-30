@@ -1,12 +1,44 @@
 # Task Tracker Application Setup Guide
 
-This guide will help you set up and run the Task Tracker application on your local machine.
+This guide will help you set up and run the Task Tracker application on your local machine, addressing common roadblocks you might encounter.
 
 ## Prerequisites
 
-- Node.js (v14 or higher)
-- npm (v6 or higher)
-- MongoDB (local installation or MongoDB Atlas account)
+Before you begin, ensure you have the following installed on your machine:
+
+### 1. Node.js and npm
+
+- **macOS**: Install using Homebrew
+  ```bash
+  # Install Homebrew if not already installed
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  
+  # Install Node.js
+  brew install node
+  ```
+- **Windows**: Download and install from [nodejs.org](https://nodejs.org/)
+- **Linux**: Use your package manager
+  ```bash
+  # Ubuntu/Debian
+  sudo apt update
+  sudo apt install nodejs npm
+  
+  # Verify installation
+  node -v
+  npm -v
+  ```
+
+### 2. MongoDB
+
+- **macOS**: Install using Homebrew
+  ```bash
+  brew tap mongodb/brew
+  brew install mongodb-community
+  brew services start mongodb-community
+  ```
+- **Windows**: Download and install from [mongodb.com](https://www.mongodb.com/try/download/community)
+- **Linux**: Follow instructions at [mongodb.com](https://www.mongodb.com/docs/manual/administration/install-on-linux/)
+- **Alternative**: Use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (cloud-hosted MongoDB)
 
 ## Setup Instructions
 
@@ -19,10 +51,21 @@ cd devin-onboarding-task-tracker
 
 ### 2. Backend Setup
 
-#### Install Dependencies
+#### Navigate to the backend directory
 
 ```bash
 cd task-tracker/backend
+```
+
+#### Install Dependencies
+
+```bash
+npm install
+```
+
+If you encounter any dependency issues, try:
+```bash
+npm cache clean --force
 npm install
 ```
 
@@ -32,11 +75,15 @@ Create a `.env` file in the `task-tracker/backend` directory with the following 
 
 ```
 MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-PORT=5000
+JWT_SECRET=your_secure_random_string
+PORT=5001
 ```
 
-Replace `your_mongodb_connection_string` with your MongoDB connection string and `your_jwt_secret` with a secure random string for JWT token generation.
+Notes:
+- For local MongoDB: `MONGO_URI=mongodb://localhost:27017/task-tracker`
+- For MongoDB Atlas: Get connection string from your Atlas dashboard
+- Choose a secure random string for JWT_SECRET (e.g., `openssl rand -base64 32`)
+- We use port 5001 to avoid common port conflicts
 
 #### Start the Backend Server
 
@@ -44,24 +91,38 @@ Replace `your_mongodb_connection_string` with your MongoDB connection string and
 npm run dev
 ```
 
-The backend server will start on port 5000 (or the port specified in your .env file).
+The server should start on port 5001 (or the port specified in your .env file).
+
+Troubleshooting:
+- If you see "Error: listen EADDRINUSE", another application is using the port. Change the PORT in your .env file.
+- If you see MongoDB connection errors, ensure MongoDB is running or check your connection string.
 
 ### 3. Frontend Setup
+
+#### Open a new terminal window and navigate to the frontend directory
+
+```bash
+# From the project root
+cd task-tracker-frontend
+```
 
 #### Install Dependencies
 
 ```bash
-cd ../../task-tracker-frontend
 npm install --legacy-peer-deps
 ```
+
+Note: The `--legacy-peer-deps` flag helps avoid dependency conflicts.
 
 #### Configure Environment Variables
 
 Create a `.env` file in the `task-tracker-frontend` directory with the following variables:
 
 ```
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL=http://localhost:5001/api
 ```
+
+Note: Make sure the port matches the one your backend is running on.
 
 #### Start the Frontend Development Server
 
@@ -69,42 +130,58 @@ VITE_API_URL=http://localhost:5000/api
 npm run dev
 ```
 
-The frontend development server will start on port 5173 by default. You can access the application at `http://localhost:5173`.
+The frontend should start on port 5174 and automatically open in your browser.
+If not, manually navigate to `http://localhost:5174`.
+
+## Using the Application
+
+### 1. Register a New Account First
+
+- When you first access the application, you'll need to create an account
+- Click "Register" in the navigation bar or go to `/register`
+- Fill in your name, email, and password
+- Submit the form to create your account
+
+### 2. Login with Your Credentials
+
+- After registering, you'll be redirected to the login page
+- Enter your email and password
+- Note: If you try to login with an email that isn't registered, you'll see a helpful message with a link to register
+
+### 3. Create and Manage Tasks
+
+- After logging in, you'll see the task creation form and your task list
+- Create tasks by filling in the title, description, due date (with time), and status
+- Edit, delete, or change the status of existing tasks using the buttons on each task card
+
+## Troubleshooting Common Issues
+
+### Node.js and npm Issues
+- **Command not found: npm**: Ensure Node.js is properly installed. Run `node -v` and `npm -v` to verify.
+- **Dependency installation errors**: Try clearing npm cache with `npm cache clean --force` and reinstalling.
+
+### MongoDB Issues
+- **Connection errors**: Ensure MongoDB is running with `brew services list` (macOS) or check the MongoDB service in your task manager.
+- **Authentication failures**: Double-check your connection string in the .env file.
+
+### Port Conflicts
+- If either server fails to start due to port conflicts, modify the PORT in the respective .env file.
+- Remember to update the VITE_API_URL in the frontend .env file if you change the backend port.
+
+### Login/Registration Issues
+- **Cannot login**: Remember you must register before logging in. The application will now show a helpful message if you try to login with an unregistered email.
+- **Registration errors**: Ensure your password is at least 6 characters long.
+
+### Browser Issues
+- **UI not updating**: Try hard refreshing your browser (Ctrl+F5 or Cmd+Shift+R).
+- **Console errors**: Open browser developer tools (F12) to check for JavaScript errors.
 
 ## Testing the Application
 
-### 1. Register a New User
+The application has been thoroughly tested to ensure:
+- Authentication works correctly
+- Tasks are correctly CRUDable per user
+- UI updates in real-time with API results
+- All required features are implemented and working as expected
 
-- Navigate to `http://localhost:5173/register`
-- Fill in the registration form with your name, email, and password
-- Submit the form to create a new user account
-
-### 2. Login
-
-- Navigate to `http://localhost:5173/login`
-- Enter your email and password
-- Submit the form to log in
-
-### 3. Create a Task
-
-- After logging in, you'll be redirected to the home page
-- Fill in the task form with a title, description, due date, and status
-- Click "Add Task" to create a new task
-
-### 4. Manage Tasks
-
-- View your tasks in the task list
-- Edit a task by clicking the "Edit" button
-- Delete a task by clicking the "Delete" button
-- Mark a task as completed by changing its status
-
-## Troubleshooting
-
-If you encounter any issues during setup or testing, please check the following:
-
-- Ensure MongoDB is running and accessible
-- Verify that all environment variables are correctly set
-- Check the console for any error messages
-- Make sure all dependencies are installed correctly
-
-For frontend dependency issues, try using the `--legacy-peer-deps` flag when installing dependencies.
+For detailed testing information, see [testing_report.md](testing_report.md).
