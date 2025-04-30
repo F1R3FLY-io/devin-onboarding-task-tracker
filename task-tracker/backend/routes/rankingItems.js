@@ -16,7 +16,7 @@ router.get('/:listId', auth, async (req, res) => {
       return res.status(401).json({ msg: 'Not authorized' });
     }
     
-    const items = await RankingItem.find({ list: req.params.listId }).sort({ value: 1 });
+    const items = await RankingItem.find({ list: req.params.listId }).sort({ value: -1 }); // Sort descending for unified approach
     res.json(items);
   } catch (err) {
     console.error(err.message);
@@ -147,16 +147,18 @@ router.post('/:listId/reset', auth, async (req, res) => {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 
-    const items = await RankingItem.find({ list: req.params.listId }).sort({ value: 1 });
+    const items = await RankingItem.find({ list: req.params.listId });
     
     if (items.length === 0) {
       return res.status(400).json({ msg: 'No items to reset' });
     }
 
+    items.sort((a, b) => b.value - a.value);
+    
     const step = items.length > 1 ? 100 / (items.length - 1) : 50;
     
     const updates = items.map((item, index) => {
-      const newValue = items.length > 1 ? index * step : 50;
+      const newValue = items.length > 1 ? 100 - (index * step) : 50;
       return RankingItem.findByIdAndUpdate(
         item._id,
         { $set: { value: newValue } },
@@ -164,9 +166,14 @@ router.post('/:listId/reset', auth, async (req, res) => {
       );
     });
     
-    await Promise.all(updates);
+    try {
+      await Promise.all(updates);
+    } catch (updateErr) {
+      console.error('Error updating items:', updateErr);
+      return res.status(500).json({ msg: 'Error updating item values' });
+    }
     
-    const updatedItems = await RankingItem.find({ list: req.params.listId }).sort({ value: 1 });
+    const updatedItems = await RankingItem.find({ list: req.params.listId }).sort({ value: -1 }); // Sort descending
     res.json(updatedItems);
   } catch (err) {
     console.error(err.message);
