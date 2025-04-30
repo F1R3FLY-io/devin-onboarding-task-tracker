@@ -173,7 +173,7 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
       
       setLocalItems(updatedItems);
       
-      const finalItems = updateItemValues(updatedItems, mode);
+      const finalItems = calculateNonConflictingValues(updatedItems);
       
       setLocalItems(finalItems);
       
@@ -183,14 +183,22 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
     }
   };
 
-  const updateItemValues = (items: RankingItem[], mode: 'unified'): RankingItem[] => {
-    if (items.length > 1) {
-      return items.map((item, index) => ({
+  const calculateNonConflictingValues = (items: RankingItem[]): RankingItem[] => {
+    if (items.length <= 1) {
+      return items.map(item => ({
         ...item,
-        value: items.length > 1 ? (index * 100) / (items.length - 1) : 50
+        value: 50 // Default value for single items
       }));
     }
-    return items;
+    
+    const sortedItems = [...items];
+    
+    const step = 100 / (sortedItems.length - 1);
+    
+    return sortedItems.map((item, index) => ({
+      ...item,
+      value: Math.round((100 - (index * step)) * 100) / 100 // Round to 2 decimal places
+    }));
   };
 
   const handleValueChange = (id: string, newValue: number) => {
