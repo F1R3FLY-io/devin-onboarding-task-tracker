@@ -22,9 +22,6 @@ const ValueRank = () => {
     error 
   } = rankingContext;
 
-  console.log('ValueRank - Auth State:', { isAuthenticated, authLoading });
-  console.log('ValueRank - Ranking State:', { lists, currentList, rankingLoading });
-
   const [showListForm, setShowListForm] = useState(false);
   const [apiUrlError, setApiUrlError] = useState<string | null>(null);
 
@@ -36,19 +33,15 @@ const ValueRank = () => {
   }, []);
 
   useEffect(() => {
-    console.log('ValueRank - Auth Effect triggered', { isAuthenticated, authLoading });
     if (!isAuthenticated && !authLoading) {
-      console.log('ValueRank - Redirecting to login');
       navigate('/login');
     } else if (isAuthenticated) {
-      console.log('ValueRank - Fetching lists');
       getLists();
     }
   }, [isAuthenticated, authLoading, navigate]);
 
   useEffect(() => {
     if (currentList) {
-      console.log('ValueRank - Fetching items for list:', currentList._id);
       getItems(currentList._id);
     }
   }, [currentList]);
@@ -69,7 +62,6 @@ const ValueRank = () => {
   }
 
   if (authLoading || (isAuthenticated === null)) {
-    console.log('ValueRank - Loading state, waiting for authentication');
     return (
       <div className="text-center py-10">
         <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-4"></div>
@@ -79,7 +71,6 @@ const ValueRank = () => {
   }
   
   if (error) {
-    console.log('ValueRank - Error state:', error);
     return (
       <div className="text-center py-10">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -136,9 +127,9 @@ const ValueRank = () => {
           <>
             <h2 className="text-2xl font-bold mb-4">{currentList.name}</h2>
             <p className="mb-4 text-gray-600">
-              Mode: {currentList.mode.charAt(0).toUpperCase() + currentList.mode.slice(1)}
+              Unified ranking and rating system
             </p>
-            <RankingItems items={items} listId={currentList._id} mode={currentList.mode} />
+            <RankingItems items={items} listId={currentList._id} mode="unified" />
           </>
         ) : (
           <div className="bg-gray-100 p-6 rounded-lg text-center">

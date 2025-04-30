@@ -12,8 +12,8 @@ const RankingListSchema = new mongoose.Schema({
   },
   mode: {
     type: String,
-    enum: ['incremental', 'distributed'],
-    default: 'distributed'
+    enum: ['unified'], // Changed from ['incremental', 'distributed']
+    default: 'unified'  // Changed from 'distributed'
   },
   createdAt: {
     type: Date,

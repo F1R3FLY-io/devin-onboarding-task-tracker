@@ -11,19 +11,19 @@ const RankingListForm: React.FC<RankingListFormProps> = ({ onClose }) => {
 
   const [list, setList] = useState({
     name: '',
-    mode: 'distributed'
+    mode: 'unified'
   });
 
   useEffect(() => {
     if (currentList !== null) {
       setList({
         name: currentList.name,
-        mode: currentList.mode
+        mode: 'unified' // Always use unified mode
       });
     } else {
       setList({
         name: '',
-        mode: 'distributed'
+        mode: 'unified'
       });
     }
   }, [currentList]);
@@ -45,13 +45,13 @@ const RankingListForm: React.FC<RankingListFormProps> = ({ onClose }) => {
     if (currentList === null) {
       addList({
         name,
-        mode: mode as 'incremental' | 'distributed'
+        mode: 'unified'
       });
     } else {
       updateList({
         ...currentList,
         name,
-        mode: mode as 'incremental' | 'distributed'
+        mode: 'unified'
       });
     }
 
@@ -81,23 +81,14 @@ const RankingListForm: React.FC<RankingListFormProps> = ({ onClose }) => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="mode">
-          Mode
-        </label>
-        <select
-          name="mode"
-          value={mode}
-          onChange={onChange}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        >
-          <option value="distributed">Distributed (0-100 scale)</option>
-          <option value="incremental">Incremental (Sequential numbers)</option>
-        </select>
-        <p className="text-xs text-gray-500 mt-1">
-          {mode === 'distributed' 
-            ? 'Values will be evenly distributed between 0-100 when reset' 
-            : 'Values will be sequential integers when reset'}
+        <p className="text-sm text-gray-600 mb-2">
+          In this list, items with higher ratings will be ranked higher. 
+          The system will automatically adjust values to prevent duplicates.
         </p>
+        <p className="text-xs text-gray-500">
+          Values range from 0-100, with 100 being the highest rating and rank.
+        </p>
+        <input type="hidden" name="mode" value="unified" />
       </div>
       <div className="flex items-center justify-between">
         <button

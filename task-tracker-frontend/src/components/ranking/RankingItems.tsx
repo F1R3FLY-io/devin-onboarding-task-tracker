@@ -7,7 +7,7 @@ import RankingItemForm from './RankingItemForm';
 type RankingItemsProps = {
   items: RankingItem[];
   listId: string;
-  mode: 'incremental' | 'distributed';
+  mode: 'unified';
 };
 
 type DraggableItemProps = {
@@ -180,16 +180,11 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
     });
   };
 
-  const updateItemValues = (items: RankingItem[], mode: 'incremental' | 'distributed'): RankingItem[] => {
-    if (mode === 'distributed' && items.length > 1) {
+  const updateItemValues = (items: RankingItem[], mode: 'unified'): RankingItem[] => {
+    if (items.length > 1) {
       return items.map((item, index) => ({
         ...item,
         value: items.length > 1 ? (index * 100) / (items.length - 1) : 50
-      }));
-    } else if (mode === 'incremental') {
-      return items.map((item, index) => ({
-        ...item,
-        value: index + 1
       }));
     }
     return items;
