@@ -114,7 +114,8 @@ const rankingReducer = (state: RankingState, action: RankingAction): RankingStat
     case 'RANKING_ERROR':
       return {
         ...state,
-        error: action.payload
+        error: action.payload,
+        loading: false // Ensure loading is set to false when an error occurs
       };
     case 'CLEAR_ERRORS':
       return {
