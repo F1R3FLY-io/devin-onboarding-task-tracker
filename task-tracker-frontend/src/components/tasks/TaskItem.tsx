@@ -95,7 +95,7 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
                   const list = lists.find(l => l._id === item.list);
                   if (list) {
                     setCurrentList(list);
-                    navigate('/valuerank');
+                    navigate(`/valuerank#item-${item._id}`);
                   }
                 }}
               >

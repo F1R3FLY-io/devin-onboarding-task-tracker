@@ -104,9 +104,12 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
   return (
     <div 
       ref={(node) => drag(drop(node))}
-      className={`flex items-center p-3 mb-2 bg-white rounded shadow-sm ${
+      id={`item-${item._id}`}
+      className={`flex items-center p-4 mb-2 bg-white dark:bg-gray-800 rounded-xl shadow-soft ${
         isDragging ? 'opacity-50' : ''
-      } ${isOver ? 'border-2 border-blue-400' : ''}`}
+      } ${isOver ? 'border-2 border-blue-400 dark:border-blue-500' : ''} ${
+        window.location.hash === `#item-${item._id}` ? 'ring-2 ring-blue-500 dark:ring-blue-400 animate-pulse' : ''
+      }`}
       style={{ 
         cursor: 'grab',
         transition: 'all 0.2s ease',
@@ -123,15 +126,15 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
           step="0.01"
           min="0"
           max="100"
-          className="w-full p-1 text-center border rounded"
+          className="w-full p-1 text-center border rounded-xl bg-white dark:bg-gray-700 dark:text-gray-100 shadow-soft"
         />
       </div>
       <div className="flex-grow">
-        <p className="font-medium">{item.text}</p>
+        <p className="font-medium text-gray-800 dark:text-gray-100">{item.text}</p>
         {item.taskId && (
           <div className="mt-1">
             <button 
-              className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors flex items-center"
+              className="text-xs bg-blue-100/80 dark:bg-blue-800/50 text-blue-800 dark:text-blue-200 px-3 py-1.5 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-700/60 transition-colors flex items-center shadow-soft"
               onClick={() => {
                 const task = taskContext?.tasks.find(t => t._id === item.taskId);
                 if (task) {
@@ -142,7 +145,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
               title="View associated task"
             >
               {taskContext?.tasks.find(t => t._id === item.taskId)?.title || 'Linked to task'}
-              <span className="ml-1 text-blue-600">→</span>
+              <span className="ml-1 text-blue-600 dark:text-blue-300">→</span>
             </button>
           </div>
         )}
@@ -151,8 +154,8 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
         <button
           onClick={() => onMoveUp(index)}
           disabled={index === 0}
-          className={`p-1 mr-1 rounded ${
-            index === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-500 hover:bg-blue-100'
+          className={`p-1.5 mr-1 rounded-xl ${
+            index === 0 ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed' : 'text-blue-500 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 shadow-soft'
           }`}
           title="Move Up"
         >
@@ -161,8 +164,8 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
         <button
           onClick={() => onMoveDown(index)}
           disabled={index === items.length - 1}
-          className={`p-1 mr-1 rounded ${
-            index === items.length - 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-500 hover:bg-blue-100'
+          className={`p-1.5 mr-1 rounded-xl ${
+            index === items.length - 1 ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed' : 'text-blue-500 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 shadow-soft'
           }`}
           title="Move Down"
         >
@@ -170,17 +173,17 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
         </button>
         <button
           onClick={() => onEdit(item)}
-          className="p-1 mr-1 text-blue-500 hover:bg-blue-100 rounded"
+          className="p-1.5 mr-1 text-blue-500 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-xl shadow-soft"
           title="Edit"
         >
-          Edit
+          <span className="mr-1">✏️</span> Edit
         </button>
         <button
           onClick={() => onDelete(item._id)}
-          className="p-1 text-red-500 hover:bg-red-100 rounded"
+          className="p-1.5 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl shadow-soft"
           title="Delete"
         >
-          Delete
+          <span className="mr-1">🗑️</span> Delete
         </button>
       </div>
     </div>
@@ -190,6 +193,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
 const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
   const rankingContext = useContext(RankingContext);
   const taskContext = useContext(TaskContext);
+  const navigate = useNavigate();
   const { 
     updateItem, 
     deleteItem, 
@@ -198,6 +202,29 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
     addItemBetween,
     addItem
   } = rankingContext;
+  
+  const scrollToItem = (itemId: string) => {
+    setTimeout(() => {
+      const element = document.getElementById(`item-${itemId}`);
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+        element.classList.add('ring-2', 'ring-blue-500', 'dark:ring-blue-400', 'animate-pulse');
+        setTimeout(() => {
+          element.classList.remove('ring-2', 'ring-blue-500', 'dark:ring-blue-400', 'animate-pulse');
+        }, 2000);
+      }
+    }, 100);
+  };
+  
+  useEffect(() => {
+    if (window.location.hash) {
+      const itemId = window.location.hash.substring(6); // Remove '#item-' prefix
+      scrollToItem(itemId);
+    }
+  }, []);
 
   const [showItemForm, setShowItemForm] = useState(false);
   const [localItems, setLocalItems] = useState<RankingItem[]>([]);
@@ -466,23 +493,23 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
         <div>
           <button
             onClick={() => setShowItemForm(!showItemForm)}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded mr-2"
+            className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-xl shadow-soft transition-all duration-200 mr-2 flex items-center"
           >
-            {showItemForm ? 'Cancel' : 'Add Item'}
+            <span className="mr-1">{showItemForm ? '✖️' : '➕'}</span> {showItemForm ? 'Cancel' : 'Add Item'}
           </button>
           <button
             onClick={handleResetValues}
-            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded mr-2"
+            className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-xl shadow-soft transition-all duration-200 mr-2 flex items-center"
             disabled={localItems.length < 2}
           >
-            Reset Values
+            <span className="mr-1">🔄</span> Reset Values
           </button>
           <button
             onClick={() => setSortDirection(sortDirection === 'desc' ? 'asc' : 'desc')}
-            className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-1 px-3 rounded"
+            className="bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-xl shadow-soft transition-all duration-200 flex items-center"
             title={`Sort ${sortDirection === 'desc' ? 'Ascending' : 'Descending'}`}
           >
-            Sort: {sortDirection === 'desc' ? 'Highest First ↓' : 'Lowest First ↑'}
+            <span className="mr-1">🔢</span> Sort: {sortDirection === 'desc' ? 'Highest First ↓' : 'Lowest First ↑'}
           </button>
         </div>
         <p className="text-sm text-gray-600">
@@ -500,17 +527,17 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
       <DndProvider backend={HTML5Backend}>
         <div className="mt-4">
           {localItems.length === 0 ? (
-            <div className="bg-gray-100 p-6 rounded-lg text-center">
-              <p>No items in this list. Add an item to get started.</p>
+            <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl shadow-soft text-center backdrop-blur-md bg-opacity-90 dark:bg-opacity-90">
+              <p className="text-gray-700 dark:text-gray-300">No items in this list. Add an item to get started.</p>
             </div>
           ) : (
             <>
               {/* Add button at the top */}
               <button
                 onClick={() => handleAddBetween(0)}
-                className="w-full py-1 mb-2 text-sm text-blue-600 hover:bg-blue-50 rounded border border-dashed border-blue-300"
+                className="w-full py-2 mb-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl border border-dashed border-blue-300 dark:border-blue-700 transition-colors shadow-soft"
               >
-                + Add item here
+                <span className="mr-1">➕</span> Add item here
               </button>
               
               {localItems.map((item, index) => (
@@ -529,9 +556,9 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
                   {/* Add button between items */}
                   <button
                     onClick={() => handleAddBetween(index + 1)}
-                    className="w-full py-1 mb-2 text-sm text-blue-600 hover:bg-blue-50 rounded border border-dashed border-blue-300"
+                    className="w-full py-2 mb-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl border border-dashed border-blue-300 dark:border-blue-700 transition-colors shadow-soft"
                   >
-                    + Add item here
+                    <span className="mr-1">➕</span> Add item here
                   </button>
                 </React.Fragment>
               ))}
