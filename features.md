@@ -56,19 +56,18 @@ This document tracks the features that have been implemented, are in progress, a
   - [x] Option to view all tasks regardless of status
   - [x] Testing Status: ⚠️ Partially tested
 
-## 🔄 In Progress Features
+## ✅ Implemented Features (Needs Testing)
 
-- [ ] **Bidirectional Associations**
-  - [ ] Navigate from tasks to associated priority arrays
-  - [ ] Navigate from tasks to associated line items with animated scrolling
-  - [ ] Navigate from priority arrays to associated tasks
-  - [ ] Navigate from line items to associated tasks
-  - [ ] Testing Status: ❌ Implementation incomplete
+- [x] **Bidirectional Associations**
+  - [x] Navigate from tasks to associated priority arrays
+  - [x] Navigate from tasks to associated line items with animated scrolling
+  - [x] Navigate from priority arrays to associated tasks
+  - [x] Navigate from line items to associated tasks
+  - [x] Testing Status: ⚠️ Implemented but needs testing with actual data
 
 ## 🐛 Known Issues
 
-- **Bidirectional Navigation**: Links between priority arrays and tasks are not fully implemented
-- **Line Item Associations**: Clicking line items should navigate to the specific item in the array with animated scrolling
+- **Bidirectional Navigation**: Navigation links are implemented but not visible due to lack of associations between entities
 - **Authentication Issues**: Some users experience login failures with the backend API
 
 ## 🔍 Testing Status Legend
