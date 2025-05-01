@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/auth/AuthContext';
-import RankingContext from '../context/ranking/RankingContext';
+import RankingContext, { RankingList } from '../context/ranking/RankingContext';
 import RankingListForm from '../components/ranking/RankingListForm';
 import RankingLists from '../components/ranking/RankingLists';
 import RankingItems from '../components/ranking/RankingItems';
@@ -18,12 +18,15 @@ const ValueRank = () => {
     items, 
     getLists, 
     getItems, 
+    updateList,
     loading: rankingLoading,
     error 
   } = rankingContext;
 
   const [showListForm, setShowListForm] = useState(false);
   const [apiUrlError, setApiUrlError] = useState<string | null>(null);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState('');
 
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL;
@@ -46,8 +49,40 @@ const ValueRank = () => {
     }
   }, [currentList]);
 
+  useEffect(() => {
+    if (currentList) {
+      setEditedTitle(currentList.name);
+    }
+  }, [currentList]);
+
   const toggleListForm = () => {
     setShowListForm(!showListForm);
+  };
+  
+  const startTitleEditing = () => {
+    if (currentList) {
+      setIsEditingTitle(true);
+      setEditedTitle(currentList.name);
+    }
+  };
+  
+  const saveTitleEdit = () => {
+    if (currentList && editedTitle.trim() !== '') {
+      updateList({
+        ...currentList,
+        name: editedTitle
+      });
+      setIsEditingTitle(false);
+    } else if (editedTitle.trim() === '') {
+      alert('List name cannot be empty');
+    }
+  };
+  
+  const cancelTitleEditing = () => {
+    if (currentList) {
+      setEditedTitle(currentList.name);
+      setIsEditingTitle(false);
+    }
   };
 
   if (apiUrlError) {
@@ -169,7 +204,46 @@ const ValueRank = () => {
       <div className="md:col-span-2">
         {currentList ? (
           <>
-            <h2 className="text-2xl font-bold mb-4">{currentList.name}</h2>
+            {isEditingTitle ? (
+              <div className="flex items-center mb-4">
+                <input
+                  type="text"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  className="border rounded py-1 px-2 mr-2 text-2xl font-bold"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') saveTitleEdit();
+                    if (e.key === 'Escape') cancelTitleEditing();
+                  }}
+                />
+                <button 
+                  onClick={saveTitleEdit} 
+                  className="text-green-500 hover:text-green-700 mr-1 text-xl" 
+                  title="Save"
+                >
+                  ✓
+                </button>
+                <button 
+                  onClick={cancelTitleEditing} 
+                  className="text-red-500 hover:text-red-700 text-xl" 
+                  title="Cancel"
+                >
+                  ✗
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center mb-4">
+                <h2 className="text-2xl font-bold mr-2">{currentList.name}</h2>
+                <button 
+                  onClick={startTitleEditing} 
+                  className="text-gray-500 hover:text-gray-700 text-sm"
+                  title="Rename"
+                >
+                  ✏️
+                </button>
+              </div>
+            )}
             <p className="mb-4 text-gray-600">
               Higher values (0-100) mean higher rankings
             </p>
