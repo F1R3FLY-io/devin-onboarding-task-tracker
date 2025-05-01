@@ -87,13 +87,21 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
           <p className="text-sm text-gray-700 dark:text-gray-300 mb-2"><strong>📊 Associated Line Items:</strong></p>
           <div className="flex flex-wrap gap-2">
             {associatedItems.map(item => (
-              <div 
+              <button 
                 key={item._id} 
-                className="inline-block bg-purple-100/80 dark:bg-purple-800/50 text-purple-800 dark:text-purple-200 text-xs px-3 py-1.5 rounded-xl flex items-center shadow-soft"
+                className="inline-block bg-purple-100/80 dark:bg-purple-800/50 text-purple-800 dark:text-purple-200 text-xs px-3 py-1.5 rounded-xl hover:bg-purple-200 dark:hover:bg-purple-700/60 transition-colors flex items-center shadow-soft"
                 title={`Item from ${lists.find(l => l._id === item.list)?.name || 'Unknown priority array'}`}
+                onClick={() => {
+                  const list = lists.find(l => l._id === item.list);
+                  if (list) {
+                    setCurrentList(list);
+                    navigate('/valuerank');
+                  }
+                }}
               >
                 {item.text} <span className="ml-1 text-purple-600 dark:text-purple-300">(Value: {item.value})</span>
-              </div>
+                <span className="ml-1 text-purple-600 dark:text-purple-300">→</span>
+              </button>
             ))}
           </div>
         </div>

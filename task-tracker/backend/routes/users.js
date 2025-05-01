@@ -14,17 +14,23 @@ router.post(
     check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })
   ],
   async (req, res) => {
+    console.log('Registration request received');
+    console.log('Request body:', req.body);
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('Validation errors:', errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
     const { name, email, password } = req.body;
+    console.log('Extracted data:', { name, email, passwordLength: password ? password.length : 0 });
 
     try {
       let user = await User.findOne({ email });
 
       if (user) {
+        console.log('User already exists with email:', email);
         return res.status(400).json({ msg: 'User already exists' });
       }
 
@@ -38,6 +44,7 @@ router.post(
       user.password = await bcrypt.hash(password, salt);
 
       await user.save();
+      console.log('User saved to database with ID:', user.id);
 
       const payload = {
         user: {
@@ -50,12 +57,16 @@ router.post(
         process.env.JWT_SECRET,
         { expiresIn: 3600 },
         (err, token) => {
-          if (err) throw err;
+          if (err) {
+            console.error('JWT Sign error:', err);
+            throw err;
+          }
+          console.log('JWT token generated successfully');
           res.json({ token });
         }
       );
     } catch (err) {
-      console.error(err.message);
+      console.error('Registration error:', err.message);
       res.status(500).send('Server Error');
     }
   }

@@ -153,12 +153,12 @@ const TaskForm = () => {
       </div>
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="listIds">
-          Associated Lists (Optional)
+          Associated Priority Arrays (Optional)
         </label>
         <div className="relative">
           <input
             type="text"
-            placeholder="Search for lists..."
+            placeholder="Search for priority arrays..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-1"

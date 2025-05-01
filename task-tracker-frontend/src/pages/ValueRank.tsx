@@ -251,7 +251,7 @@ const ValueRank = () => {
               </div>
             )}
             <p className="mb-4 text-gray-600 dark:text-gray-300">
-              Higher values (0-100) indicate higher priority
+              Higher values (0-100) indicate higher priority in the array
             </p>
             <div className="mb-6 bg-blue-50/70 dark:bg-blue-900/20 p-4 rounded-xl backdrop-blur-sm">
               <p className="text-blue-800 dark:text-blue-200 font-medium"><strong>🔍 How Priority Arrays Work:</strong></p>

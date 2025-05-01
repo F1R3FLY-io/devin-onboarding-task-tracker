@@ -129,16 +129,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       console.log('Login response:', res.data);
       
+      localStorage.setItem('token', res.data.token);
+      setAuthToken(res.data.token);
+      console.log('Auth token set in localStorage and axios headers');
+      
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: res.data
       });
-
-      console.log('Token after dispatch:', localStorage.getItem('token'));
-      setAuthToken(res.data.token);
-      console.log('Auth token set in axios headers');
       
-      await loadUser();
+      setTimeout(async () => {
+        console.log('Loading user after delay, token:', localStorage.getItem('token'));
+        try {
+          await loadUser();
+        } catch (loadErr: any) {
+          console.error('Error loading user after login:', loadErr.message);
+        }
+      }, 500);
     } catch (err: any) {
       console.error('Login error:', err.response?.data || err.message);
       dispatch({
