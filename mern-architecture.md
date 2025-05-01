@@ -10,14 +10,14 @@ task-tracker/
 │   ├── models/              # Mongoose data models
 │   │   ├── User.js          # User model
 │   │   ├── Task.js          # Task model with list associations
-│   │   ├── RankingList.js   # Ranking list model
-│   │   └── RankingItem.js   # Ranking item model with task associations
+│   │   ├── RankingList.js   # Priority array model
+│   │   └── RankingItem.js   # Priority array item model with task associations
 │   ├── routes/              # API routes
 │   │   ├── auth.js          # Authentication routes
 │   │   ├── users.js         # User management routes
 │   │   ├── tasks.js         # Task management routes
-│   │   ├── rankingLists.js  # Ranking list management routes
-│   │   └── rankingItems.js  # Ranking item management routes
+│   │   ├── rankingLists.js  # Priority array management routes
+│   │   └── rankingItems.js  # Priority array item management routes
 │   ├── .env                 # Environment variables
 │   ├── package.json         # Backend dependencies
 │   └── server.js            # Express server setup
@@ -32,10 +32,10 @@ task-tracker/
     │   │   │   ├── TaskForm.tsx  # Form for creating/editing tasks with list associations
     │   │   │   ├── TaskItem.tsx  # Individual task display with status toggle
     │   │   │   └── TaskList.tsx  # List of tasks
-    │   │   └── ranking/     # Ranking-related components
-    │   │       ├── RankingListForm.tsx  # Form for creating/editing ranking lists
-    │   │       ├── RankingLists.tsx  # List of ranking lists with inline renaming
-    │   │       ├── RankingItems.tsx  # Draggable ranking items
+    │   │   └── ranking/     # Priority array-related components
+    │   │       ├── RankingListForm.tsx  # Form for creating/editing priority arrays
+    │   │       ├── RankingLists.tsx  # List of priority arrays with inline renaming
+    │   │       ├── RankingItems.tsx  # Draggable priority array items
     │   │       └── RankingItemForm.tsx  # Form with searchable task dropdown
     │   ├── context/         # Context API for state management
     │   │   ├── auth/        # Authentication context
@@ -178,7 +178,7 @@ The application implements JWT (JSON Web Token) based authentication:
 }
 ```
 
-#### RankingList Model
+#### Priority Array Model
 ```javascript
 {
   user: {
@@ -250,19 +250,19 @@ The application implements JWT (JSON Web Token) based authentication:
 - `PUT /api/tasks/:id`: Update an existing task
 - `DELETE /api/tasks/:id`: Delete a task
 
-#### Ranking List Routes
-- `GET /api/rankinglists`: Get all ranking lists for authenticated user
-- `POST /api/rankinglists`: Create a new ranking list
-- `PUT /api/rankinglists/:id`: Update an existing ranking list
-- `DELETE /api/rankinglists/:id`: Delete a ranking list
+#### Priority Array Routes
+- `GET /api/rankinglists`: Get all priority arrays for authenticated user
+- `POST /api/rankinglists`: Create a new priority array
+- `PUT /api/rankinglists/:id`: Update an existing priority array
+- `DELETE /api/rankinglists/:id`: Delete a priority array
 
-#### Ranking Item Routes
-- `GET /api/rankingitems/:listId`: Get all ranking items for a specific list
-- `POST /api/rankingitems/:listId`: Create a new ranking item
-- `PUT /api/rankingitems/:id`: Update an existing ranking item
-- `DELETE /api/rankingitems/:id`: Delete a ranking item
+#### Priority Array Item Routes
+- `GET /api/rankingitems/:listId`: Get all priority array items for a specific array
+- `POST /api/rankingitems/:listId`: Create a new priority array item
+- `PUT /api/rankingitems/:id`: Update an existing priority array item
+- `DELETE /api/rankingitems/:id`: Delete a priority array item
 - `POST /api/rankingitems/:listId/addBetween`: Add a new item between two existing items
-- `POST /api/rankingitems/:listId/reset`: Reset item values in a list
+- `POST /api/rankingitems/:listId/reset`: Reset item values in an array
 
 ## Frontend State Management
 
@@ -282,11 +282,11 @@ The application uses React Context API for state management:
    - Supports list associations for tasks
 
 3. **RankingContext**:
-   - Manages ranking lists and items
-   - Provides CRUD operations for lists and items
+   - Manages priority arrays and items
+   - Provides CRUD operations for arrays and items
    - Handles drag and drop functionality
-   - Manages value calculations for ranking items
-   - Supports task associations for ranking items
+   - Manages value calculations for priority array items
+   - Supports task associations for priority array items
 
 ## Responsive Design Strategy
 
