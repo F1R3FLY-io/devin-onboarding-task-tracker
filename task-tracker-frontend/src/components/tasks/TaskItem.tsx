@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 import TaskContext, { Task } from '../../context/task/TaskContext';
 import RankingContext from '../../context/ranking/RankingContext';
 
@@ -10,8 +11,9 @@ type TaskProps = {
 const TaskItem: React.FC<TaskProps> = ({ task }) => {
   const taskContext = useContext(TaskContext);
   const rankingContext = useContext(RankingContext);
+  const navigate = useNavigate();
   const { deleteTask, setCurrent, clearCurrent, updateTask } = taskContext;
-  const { lists } = rankingContext;
+  const { lists, setCurrentList } = rankingContext;
   const { _id, title, description, dueDate, status, listIds = [] } = task;
 
   const onDelete = () => {
@@ -61,12 +63,18 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
           <p className="text-sm text-gray-700 mb-1"><strong>Associated Lists:</strong></p>
           <div className="flex flex-wrap gap-1">
             {associatedLists.map(list => (
-              <span 
+              <button 
                 key={list._id} 
-                className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
+                className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded hover:bg-blue-200 transition-colors flex items-center"
+                onClick={() => {
+                  setCurrentList(list);
+                  navigate('/valuerank');
+                }}
+                title={`View ${list.name} list`}
               >
                 {list.name}
-              </span>
+                <span className="ml-1 text-blue-600">→</span>
+              </button>
             ))}
           </div>
         </div>

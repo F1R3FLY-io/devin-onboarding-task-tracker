@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useNavigate } from 'react-router-dom';
 import RankingContext, { RankingItem } from '../../context/ranking/RankingContext';
 import TaskContext from '../../context/task/TaskContext';
 import RankingItemForm from './RankingItemForm';
@@ -38,6 +39,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
 }) => {
   const rankingContext = useContext(RankingContext);
   const taskContext = useContext(TaskContext);
+  const navigate = useNavigate();
   
   const [{ isDragging }, drag] = useDrag({
     type: ItemType,
@@ -128,9 +130,20 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
         <p className="font-medium">{item.text}</p>
         {item.taskId && (
           <div className="mt-1">
-            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+            <button 
+              className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors flex items-center"
+              onClick={() => {
+                const task = taskContext?.tasks.find(t => t._id === item.taskId);
+                if (task) {
+                  taskContext?.setCurrent(task);
+                  navigate('/');
+                }
+              }}
+              title="View associated task"
+            >
               {taskContext?.tasks.find(t => t._id === item.taskId)?.title || 'Linked to task'}
-            </span>
+              <span className="ml-1 text-blue-600">→</span>
+            </button>
           </div>
         )}
       </div>
