@@ -11,7 +11,7 @@ The Task Tracker application aims to provide users with a simple yet effective w
 
 Each task will include essential information such as title, description, due date, and status, allowing users to effectively organize and prioritize their work.
 
-Tasks can be directly associated with ranking lists, creating a unified workflow between task management and prioritization. Users can toggle task status directly from the task cards and rename lists from the list view, enhancing the user experience.
+Tasks can be directly associated with priority arrays, creating a unified workflow between task management and prioritization. Users can toggle task status directly from the task cards and rename priority arrays from the array view, enhancing the user experience.
 
 ## Chosen Stack: MERN
 
