@@ -1,18 +1,11 @@
-type Task = {
-  _id: string;
-  title: string;
-  description: string;
-  dueDate: string;
-  status: 'pending' | 'completed';
-  user: string;
-  createdAt: string;
-};
+import { Task, TaskFilter } from './TaskContext';
 
 type TaskState = {
   tasks: Task[];
   current: Task | null;
   loading: boolean;
   error: string | null;
+  filter: TaskFilter;
 };
 
 type TaskAction =
@@ -24,7 +17,8 @@ type TaskAction =
   | { type: 'UPDATE_TASK'; payload: Task }
   | { type: 'TASK_ERROR'; payload: string }
   | { type: 'CLEAR_TASKS' }
-  | { type: 'CLEAR_ERRORS' };
+  | { type: 'CLEAR_ERRORS' }
+  | { type: 'SET_FILTER'; payload: TaskFilter };
 
 const taskReducer = (state: TaskState, action: TaskAction): TaskState => {
   switch (action.type) {
@@ -81,6 +75,11 @@ const taskReducer = (state: TaskState, action: TaskAction): TaskState => {
       return {
         ...state,
         error: null
+      };
+    case 'SET_FILTER':
+      return {
+        ...state,
+        filter: action.payload
       };
     default:
       return state;

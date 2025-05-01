@@ -14,11 +14,14 @@ export type Task = {
   itemIds?: string[];
 };
 
+export type TaskFilter = 'all' | 'pending' | 'completed';
+
 type TaskState = {
   tasks: Task[];
   current: Task | null;
   loading: boolean;
   error: string | null;
+  filter: TaskFilter;
 };
 
 type TaskContextType = {
@@ -26,6 +29,8 @@ type TaskContextType = {
   current: Task | null;
   loading: boolean;
   error: string | null;
+  filter: TaskFilter;
+  filteredTasks: Task[];
   getTasks: () => Promise<void>;
   addTask: (task: Omit<Task, '_id' | 'user' | 'createdAt'>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
@@ -34,6 +39,7 @@ type TaskContextType = {
   updateTask: (task: Task) => Promise<void>;
   clearTasks: () => void;
   clearErrors: () => void;
+  setFilter: (filter: TaskFilter) => void;
 };
 
 const TaskContext = createContext<TaskContextType>({
@@ -41,6 +47,8 @@ const TaskContext = createContext<TaskContextType>({
   current: null,
   loading: true,
   error: null,
+  filter: 'all',
+  filteredTasks: [],
   getTasks: async () => {},
   addTask: async () => {},
   deleteTask: async () => {},
@@ -48,7 +56,8 @@ const TaskContext = createContext<TaskContextType>({
   clearCurrent: () => {},
   updateTask: async () => {},
   clearTasks: () => {},
-  clearErrors: () => {}
+  clearErrors: () => {},
+  setFilter: () => {}
 });
 
 export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -56,7 +65,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     tasks: [],
     current: null,
     loading: true,
-    error: null
+    error: null,
+    filter: 'all'
   };
 
   const [state, dispatch] = useReducer(taskReducer, initialState);
@@ -161,6 +171,15 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     dispatch({ type: 'CLEAR_ERRORS' });
   };
 
+  const setFilter = (filter: TaskFilter) => {
+    dispatch({ type: 'SET_FILTER', payload: filter });
+  };
+
+  const filteredTasks = state.tasks.filter(task => {
+    if (state.filter === 'all') return true;
+    return task.status === state.filter;
+  });
+
   return (
     <TaskContext.Provider
       value={{
@@ -168,6 +187,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         current: state.current,
         loading: state.loading,
         error: state.error,
+        filter: state.filter,
+        filteredTasks,
         getTasks,
         addTask,
         deleteTask,
@@ -175,7 +196,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         clearCurrent,
         updateTask,
         clearTasks,
-        clearErrors
+        clearErrors,
+        setFilter
       }}
     >
       {children}

@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import TaskContext from '../../context/task/TaskContext';
+import TaskContext, { TaskFilter } from '../../context/task/TaskContext';
 import TaskItem from './TaskItem';
 
 const TaskList = () => {
   const taskContext = useContext(TaskContext);
-  const { tasks, getTasks, loading } = taskContext;
+  const { filteredTasks, getTasks, loading, filter, setFilter } = taskContext;
   
   const [sortField, setSortField] = useState<'title' | 'dueDate'>('dueDate');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -13,11 +13,11 @@ const TaskList = () => {
     getTasks();
   }, []);
 
-  if (tasks?.length === 0 && !loading) {
+  if (filteredTasks?.length === 0 && !loading) {
     return <h4 className="text-center text-xl mt-4">No tasks to show</h4>;
   }
   
-  const sortedTasks = [...(tasks || [])].sort((a, b) => {
+  const sortedTasks = [...(filteredTasks || [])].sort((a, b) => {
     if (sortField === 'title') {
       const comparison = a.title.localeCompare(b.title);
       return sortDirection === 'asc' ? comparison : -comparison;
@@ -28,26 +28,67 @@ const TaskList = () => {
     }
   });
 
+  const handleFilterChange = (newFilter: TaskFilter) => {
+    setFilter(newFilter);
+  };
+
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
         <h2 className="text-xl font-bold">Your Tasks</h2>
-        <div className="flex items-center space-x-2">
-          <select 
-            value={sortField}
-            onChange={(e) => setSortField(e.target.value as 'title' | 'dueDate')}
-            className="border rounded py-1 px-2 text-sm"
-          >
-            <option value="dueDate">Due Date</option>
-            <option value="title">Title</option>
-          </select>
-          <button
-            onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-            className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-1 px-3 rounded text-sm"
-            title={`Sort ${sortDirection === 'asc' ? 'Descending' : 'Ascending'}`}
-          >
-            {sortDirection === 'asc' ? '↑' : '↓'}
-          </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Status Filter */}
+          <div className="flex rounded-md overflow-hidden border border-gray-300">
+            <button
+              onClick={() => handleFilterChange('all')}
+              className={`px-3 py-1 text-sm ${
+                filter === 'all'
+                  ? 'bg-indigo-500 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => handleFilterChange('pending')}
+              className={`px-3 py-1 text-sm ${
+                filter === 'pending'
+                  ? 'bg-indigo-500 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Pending
+            </button>
+            <button
+              onClick={() => handleFilterChange('completed')}
+              className={`px-3 py-1 text-sm ${
+                filter === 'completed'
+                  ? 'bg-indigo-500 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Completed
+            </button>
+          </div>
+          
+          {/* Sort Controls */}
+          <div className="flex items-center">
+            <select 
+              value={sortField}
+              onChange={(e) => setSortField(e.target.value as 'title' | 'dueDate')}
+              className="border rounded-l py-1 px-2 text-sm"
+            >
+              <option value="dueDate">Due Date</option>
+              <option value="title">Title</option>
+            </select>
+            <button
+              onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
+              className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-1 px-3 rounded-r text-sm"
+              title={`Sort ${sortDirection === 'asc' ? 'Descending' : 'Ascending'}`}
+            >
+              {sortDirection === 'asc' ? '↑' : '↓'}
+            </button>
+          </div>
         </div>
       </div>
       
