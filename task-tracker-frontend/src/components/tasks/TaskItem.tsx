@@ -43,30 +43,30 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
   const associatedItems = items?.filter(item => itemIds.includes(item._id)) || [];
 
   return (
-    <div className={`card bg-white p-4 rounded shadow-md ${status === 'completed' ? 'border-l-4 border-green-500' : 'border-l-4 border-yellow-500'}`}>
-      <h3 className="text-xl font-bold mb-2">{title}</h3>
-      <p className="mb-2">{description}</p>
-      <p className="text-sm text-gray-600 mb-2">
+    <div className={`card bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-soft backdrop-blur-md bg-opacity-90 dark:bg-opacity-90 ${status === 'completed' ? 'bg-gradient-to-r from-green-50 to-white dark:from-green-900/20 dark:to-gray-800' : 'bg-gradient-to-r from-yellow-50 to-white dark:from-yellow-900/20 dark:to-gray-800'}`}>
+      <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">{title}</h3>
+      <p className="mb-3 text-gray-700 dark:text-gray-300">{description}</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
         <strong>Due Date:</strong> {formatDate(dueDate)}
       </p>
-      <p className="text-sm mb-3">
+      <p className="text-sm mb-4">
         <button 
           onClick={toggleStatus}
-          className={`px-2 py-1 rounded-full text-white ${status === 'completed' ? 'bg-green-500 hover:bg-green-600' : 'bg-yellow-500 hover:bg-yellow-600'}`}
+          className={`px-3 py-1.5 rounded-xl text-white shadow-soft transition-all duration-200 ${status === 'completed' ? 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700' : 'bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700'}`}
         >
-          {status.charAt(0).toUpperCase() + status.slice(1)}
+          {status === 'completed' ? '✅ Completed' : '⏳ Pending'}
         </button>
       </p>
       
       {/* Display associated lists */}
       {associatedLists.length > 0 && (
-        <div className="mb-3">
-          <p className="text-sm text-gray-700 mb-1"><strong>Associated Priority Arrays:</strong></p>
-          <div className="flex flex-wrap gap-1">
+        <div className="mb-4 p-3 bg-blue-50/70 dark:bg-blue-900/20 rounded-xl backdrop-blur-sm">
+          <p className="text-sm text-gray-700 dark:text-gray-300 mb-2"><strong>🔗 Associated Priority Arrays:</strong></p>
+          <div className="flex flex-wrap gap-2">
             {associatedLists.map(list => (
               <button 
                 key={list._id} 
-                className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded hover:bg-blue-200 transition-colors flex items-center"
+                className="inline-block bg-blue-100/80 dark:bg-blue-800/50 text-blue-800 dark:text-blue-200 text-xs px-3 py-1.5 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-700/60 transition-colors flex items-center shadow-soft"
                 onClick={() => {
                   setCurrentList(list);
                   navigate('/valuerank');
@@ -74,7 +74,7 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
                 title={`View ${list.name} priority array`}
               >
                 {list.name}
-                <span className="ml-1 text-blue-600">→</span>
+                <span className="ml-1 text-blue-600 dark:text-blue-300">→</span>
               </button>
             ))}
           </div>
@@ -83,34 +83,34 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
       
       {/* Display associated line items */}
       {associatedItems.length > 0 && (
-        <div className="mb-3">
-          <p className="text-sm text-gray-700 mb-1"><strong>Associated Line Items:</strong></p>
-          <div className="flex flex-wrap gap-1">
+        <div className="mb-4 p-3 bg-purple-50/70 dark:bg-purple-900/20 rounded-xl backdrop-blur-sm">
+          <p className="text-sm text-gray-700 dark:text-gray-300 mb-2"><strong>📊 Associated Line Items:</strong></p>
+          <div className="flex flex-wrap gap-2">
             {associatedItems.map(item => (
               <div 
                 key={item._id} 
-                className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded flex items-center"
+                className="inline-block bg-purple-100/80 dark:bg-purple-800/50 text-purple-800 dark:text-purple-200 text-xs px-3 py-1.5 rounded-xl flex items-center shadow-soft"
                 title={`Item from ${lists.find(l => l._id === item.list)?.name || 'Unknown priority array'}`}
               >
-                {item.text} (Value: {item.value})
+                {item.text} <span className="ml-1 text-purple-600 dark:text-purple-300">(Value: {item.value})</span>
               </div>
             ))}
           </div>
         </div>
       )}
       
-      <div className="flex justify-end">
+      <div className="flex justify-end mt-2">
         <button
           onClick={() => setCurrent(task)}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
+          className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-xl mr-3 shadow-soft transition-all duration-200 flex items-center"
         >
-          Edit
+          <span className="mr-1">✏️</span> Edit
         </button>
         <button
           onClick={onDelete}
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+          className="bg-transparent hover:bg-red-500 text-red-500 hover:text-white border border-red-500 hover:border-transparent font-medium py-2 px-4 rounded-xl shadow-soft transition-all duration-200 flex items-center"
         >
-          Delete
+          <span className="mr-1">🗑️</span> Delete
         </button>
       </div>
     </div>
