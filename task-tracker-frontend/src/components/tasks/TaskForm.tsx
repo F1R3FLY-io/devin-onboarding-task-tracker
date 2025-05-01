@@ -5,17 +5,19 @@ import RankingContext from '../../context/ranking/RankingContext';
 const TaskForm = () => {
   const taskContext = useContext(TaskContext);
   const rankingContext = useContext(RankingContext);
-  const { lists } = rankingContext;
+  const { lists, items } = rankingContext;
   const { addTask, updateTask, current, clearCurrent } = taskContext;
   
   const [searchTerm, setSearchTerm] = useState('');
+  const [itemSearchTerm, setItemSearchTerm] = useState('');
 
   const [task, setTask] = useState({
     title: '',
     description: '',
     dueDate: '',
     status: 'pending',
-    listIds: [] as string[]
+    listIds: [] as string[],
+    itemIds: [] as string[]
   });
 
   useEffect(() => {
@@ -34,7 +36,8 @@ const TaskForm = () => {
         description: current.description,
         dueDate: formattedDate,
         status: current.status,
-        listIds: current.listIds || []
+        listIds: current.listIds || [],
+        itemIds: current.itemIds || []
       });
     } else {
       setTask({
@@ -42,12 +45,13 @@ const TaskForm = () => {
         description: '',
         dueDate: '',
         status: 'pending',
-        listIds: []
+        listIds: [],
+        itemIds: []
       });
     }
   }, [current]);
 
-  const { title, description, dueDate, status, listIds } = task;
+  const { title, description, dueDate, status, listIds, itemIds } = task;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setTask({ ...task, [e.target.name]: e.target.value });
@@ -56,6 +60,11 @@ const TaskForm = () => {
   const handleListChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
     setTask({ ...task, listIds: selectedOptions });
+  };
+  
+  const handleItemChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+    setTask({ ...task, itemIds: selectedOptions });
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -66,7 +75,8 @@ const TaskForm = () => {
         description: task.description,
         dueDate: task.dueDate,
         status: task.status as 'pending' | 'completed',
-        listIds: task.listIds
+        listIds: task.listIds,
+        itemIds: task.itemIds
       });
     } else {
       updateTask({
@@ -77,7 +87,8 @@ const TaskForm = () => {
         description: task.description,
         dueDate: task.dueDate,
         status: task.status as 'pending' | 'completed',
-        listIds: task.listIds
+        listIds: task.listIds,
+        itemIds: task.itemIds
       });
     }
     clearAll();
@@ -172,6 +183,43 @@ const TaskForm = () => {
           </select>
           <p className="text-xs text-gray-500 mt-1">
             Hold Ctrl (or Cmd) to select multiple lists
+          </p>
+        </div>
+      </div>
+      
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="itemIds">
+          Associated Line Items (Optional)
+        </label>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search for line items..."
+            value={itemSearchTerm}
+            onChange={(e) => setItemSearchTerm(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-1"
+          />
+          <select
+            name="itemIds"
+            multiple
+            value={itemIds}
+            onChange={handleItemChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            size={Math.min(5, items.filter(item => 
+              itemSearchTerm === '' || item.text.toLowerCase().includes(itemSearchTerm.toLowerCase())
+            ).length + 1)}
+          >
+            <option value="">None</option>
+            {items?.filter(item => 
+              itemSearchTerm === '' || item.text.toLowerCase().includes(itemSearchTerm.toLowerCase())
+            ).map(item => (
+              <option key={item._id} value={item._id}>
+                {item.text} (Value: {item.value})
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">
+            Hold Ctrl (or Cmd) to select multiple line items
           </p>
         </div>
       </div>

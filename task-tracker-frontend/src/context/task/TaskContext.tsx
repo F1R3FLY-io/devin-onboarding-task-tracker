@@ -11,6 +11,7 @@ export type Task = {
   user: string;
   createdAt: string;
   listIds?: string[];
+  itemIds?: string[];
 };
 
 type TaskState = {

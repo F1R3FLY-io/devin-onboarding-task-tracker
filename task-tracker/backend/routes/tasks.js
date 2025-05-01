@@ -32,7 +32,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title, description, dueDate, status, listIds } = req.body;
+    const { title, description, dueDate, status, listIds, itemIds } = req.body;
 
     try {
       const newTask = new Task({
@@ -41,6 +41,7 @@ router.post(
         dueDate,
         status: status || 'pending',
         listIds: listIds || [],
+        itemIds: itemIds || [],
         user: req.user.id
       });
 
@@ -54,7 +55,7 @@ router.post(
 );
 
 router.put('/:id', auth, async (req, res) => {
-  const { title, description, dueDate, status, listIds } = req.body;
+  const { title, description, dueDate, status, listIds, itemIds } = req.body;
 
   const taskFields = {};
   if (title) taskFields.title = title;
@@ -62,6 +63,7 @@ router.put('/:id', auth, async (req, res) => {
   if (dueDate) taskFields.dueDate = dueDate;
   if (status) taskFields.status = status;
   if (listIds) taskFields.listIds = listIds;
+  if (itemIds) taskFields.itemIds = itemIds;
 
   try {
     let task = await Task.findById(req.params.id);

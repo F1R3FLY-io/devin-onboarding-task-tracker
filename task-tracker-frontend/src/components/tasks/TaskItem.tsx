@@ -13,8 +13,8 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
   const rankingContext = useContext(RankingContext);
   const navigate = useNavigate();
   const { deleteTask, setCurrent, clearCurrent, updateTask } = taskContext;
-  const { lists, setCurrentList } = rankingContext;
-  const { _id, title, description, dueDate, status, listIds = [] } = task;
+  const { lists, items, setCurrentList } = rankingContext;
+  const { _id, title, description, dueDate, status, listIds = [], itemIds = [] } = task;
 
   const onDelete = () => {
     deleteTask(_id);
@@ -40,6 +40,7 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
   };
 
   const associatedLists = lists.filter(list => listIds.includes(list._id));
+  const associatedItems = items?.filter(item => itemIds.includes(item._id)) || [];
 
   return (
     <div className={`card bg-white p-4 rounded shadow-md ${status === 'completed' ? 'border-l-4 border-green-500' : 'border-l-4 border-yellow-500'}`}>
@@ -75,6 +76,24 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
                 {list.name}
                 <span className="ml-1 text-blue-600">→</span>
               </button>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Display associated line items */}
+      {associatedItems.length > 0 && (
+        <div className="mb-3">
+          <p className="text-sm text-gray-700 mb-1"><strong>Associated Line Items:</strong></p>
+          <div className="flex flex-wrap gap-1">
+            {associatedItems.map(item => (
+              <div 
+                key={item._id} 
+                className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded flex items-center"
+                title={`Item from ${lists.find(l => l._id === item.list)?.name || 'Unknown list'}`}
+              >
+                {item.text} (Value: {item.value})
+              </div>
             ))}
           </div>
         </div>

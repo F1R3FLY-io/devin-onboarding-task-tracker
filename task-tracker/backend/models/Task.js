@@ -28,6 +28,11 @@ const TaskSchema = new mongoose.Schema({
     ref: 'rankinglist',
     default: []
   },
+  itemIds: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'rankingitem',
+    default: []
+  },
   createdAt: {
     type: Date,
     default: Date.now
