@@ -123,10 +123,10 @@ const RankingLists: React.FC<RankingListsProps> = ({ lists }) => {
             </div>
           </div>
           
-          {/* Associated Tasks Section */}
-          {getAssociatedTasks(list._id).length > 0 && (
-            <div className="mt-4 p-3 bg-blue-50/70 dark:bg-blue-900/20 rounded-xl backdrop-blur-sm">
-              <p className="text-sm text-gray-700 dark:text-gray-300 mb-2"><strong>🔗 Associated Tasks:</strong></p>
+          {/* Associated Tasks Section - Always show */}
+          <div className="mt-4 p-3 bg-blue-50/70 dark:bg-blue-900/20 rounded-xl backdrop-blur-sm">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-2"><strong>🔗 Associated Tasks:</strong></p>
+            {getAssociatedTasks(list._id).length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {getAssociatedTasks(list._id).map(task => (
                   <button 
@@ -144,8 +144,10 @@ const RankingLists: React.FC<RankingListsProps> = ({ lists }) => {
                   </button>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400">No associated tasks yet.</p>
+            )}
+          </div>
           {/* Mode field hidden as requested */}
         </div>
       ))}

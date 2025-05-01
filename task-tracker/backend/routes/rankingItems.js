@@ -5,6 +5,7 @@ const auth = require('../middleware/auth');
 
 const RankingList = require('../models/RankingList');
 const RankingItem = require('../models/RankingItem');
+const Task = require('../models/Task');
 
 router.get('/:listId', auth, async (req, res) => {
   try {
@@ -68,6 +69,22 @@ router.post(
       });
 
       const item = await newItem.save();
+      
+      if (taskId) {
+        try {
+          const task = await Task.findById(taskId);
+          
+          if (task && task.user.toString() === req.user.id) {
+            if (!task.itemIds.includes(item._id)) {
+              task.itemIds.push(item._id);
+              await task.save();
+            }
+          }
+        } catch (err) {
+          console.error('Error updating associated task:', err.message);
+        }
+      }
+      
       res.json(item);
     } catch (err) {
       console.error(err.message);
@@ -105,11 +122,42 @@ router.put('/:id', auth, async (req, res) => {
       }
     }
 
+    const originalItem = await RankingItem.findById(req.params.id);
+    const originalTaskId = originalItem.taskId;
+    
     item = await RankingItem.findByIdAndUpdate(
       req.params.id,
       { $set: itemFields },
       { new: true }
     );
+
+    if (taskId !== undefined && originalTaskId !== taskId) {
+      if (originalTaskId) {
+        try {
+          const previousTask = await Task.findById(originalTaskId);
+          if (previousTask && previousTask.user.toString() === req.user.id) {
+            previousTask.itemIds = previousTask.itemIds.filter(id => id.toString() !== req.params.id);
+            await previousTask.save();
+          }
+        } catch (err) {
+          console.error('Error updating previous task:', err.message);
+        }
+      }
+      
+      if (taskId) {
+        try {
+          const newTask = await Task.findById(taskId);
+          if (newTask && newTask.user.toString() === req.user.id) {
+            if (!newTask.itemIds.includes(item._id)) {
+              newTask.itemIds.push(item._id);
+              await newTask.save();
+            }
+          }
+        } catch (err) {
+          console.error('Error updating new task:', err.message);
+        }
+      }
+    }
 
     res.json(item);
   } catch (err) {
@@ -126,6 +174,18 @@ router.delete('/:id', auth, async (req, res) => {
 
     if (item.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'Not authorized' });
+    }
+
+    if (item.taskId) {
+      try {
+        const task = await Task.findById(item.taskId);
+        if (task && task.user.toString() === req.user.id) {
+          task.itemIds = task.itemIds.filter(id => id.toString() !== req.params.id);
+          await task.save();
+        }
+      } catch (err) {
+        console.error('Error updating associated task:', err.message);
+      }
     }
 
     await RankingItem.findByIdAndRemove(req.params.id);
@@ -251,6 +311,22 @@ router.post(
       });
 
       const item = await newItem.save();
+      
+      if (taskId) {
+        try {
+          const task = await Task.findById(taskId);
+          
+          if (task && task.user.toString() === req.user.id) {
+            if (!task.itemIds.includes(item._id)) {
+              task.itemIds.push(item._id);
+              await task.save();
+            }
+          }
+        } catch (err) {
+          console.error('Error updating associated task:', err.message);
+        }
+      }
+      
       res.json(item);
     } catch (err) {
       console.error(err.message);

@@ -131,8 +131,9 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       </div>
       <div className="flex-grow">
         <p className="font-medium text-gray-800 dark:text-gray-100">{item.text}</p>
-        {item.taskId && (
-          <div className="mt-1">
+        {/* Associated Task Section - Always show */}
+        <div className="mt-1">
+          {item.taskId ? (
             <button 
               className="text-xs bg-blue-100/80 dark:bg-blue-800/50 text-blue-800 dark:text-blue-200 px-3 py-1.5 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-700/60 transition-colors flex items-center shadow-soft"
               onClick={() => {
@@ -147,8 +148,10 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
               {taskContext?.tasks.find(t => t._id === item.taskId)?.title || 'Linked to task'}
               <span className="ml-1 text-blue-600 dark:text-blue-300">→</span>
             </button>
-          </div>
-        )}
+          ) : (
+            <span className="text-xs text-gray-500 dark:text-gray-400">No associated task</span>
+          )}
+        </div>
       </div>
       <div className="flex-shrink-0 flex items-center">
         <button

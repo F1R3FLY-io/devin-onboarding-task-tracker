@@ -15,6 +15,11 @@ const RankingListSchema = new mongoose.Schema({
     enum: ['unified'], // Changed from ['incremental', 'distributed']
     default: 'unified'  // Changed from 'distributed'
   },
+  taskIds: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'task',
+    default: []
+  },
   createdAt: {
     type: Date,
     default: Date.now

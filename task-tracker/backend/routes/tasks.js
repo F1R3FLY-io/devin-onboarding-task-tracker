@@ -5,6 +5,7 @@ const auth = require('../middleware/auth');
 
 const Task = require('../models/Task');
 const User = require('../models/User');
+const RankingItem = require('../models/RankingItem');
 
 router.get('/', auth, async (req, res) => {
   try {
@@ -46,6 +47,18 @@ router.post(
       });
 
       const task = await newTask.save();
+      
+      if (itemIds && itemIds.length > 0) {
+        try {
+          await RankingItem.updateMany(
+            { _id: { $in: itemIds } },
+            { $set: { taskId: task._id } }
+          );
+        } catch (err) {
+          console.error('Error updating associated ranking items:', err.message);
+        }
+      }
+      
       res.json(task);
     } catch (err) {
       console.error(err.message);
@@ -74,11 +87,38 @@ router.put('/:id', auth, async (req, res) => {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 
+    const originalTask = await Task.findById(req.params.id);
+    const originalItemIds = originalTask.itemIds || [];
+    
     task = await Task.findByIdAndUpdate(
       req.params.id,
       { $set: taskFields },
       { new: true }
     );
+    
+    if (itemIds) {
+      try {
+        const removedItemIds = originalItemIds.filter(id => !itemIds.includes(id.toString()));
+        
+        if (removedItemIds.length > 0) {
+          await RankingItem.updateMany(
+            { _id: { $in: removedItemIds } },
+            { $set: { taskId: null } }
+          );
+        }
+        
+        const newItemIds = itemIds.filter(id => !originalItemIds.map(oid => oid.toString()).includes(id));
+        
+        if (newItemIds.length > 0) {
+          await RankingItem.updateMany(
+            { _id: { $in: newItemIds } },
+            { $set: { taskId: task._id } }
+          );
+        }
+      } catch (err) {
+        console.error('Error updating associated ranking items:', err.message);
+      }
+    }
 
     res.json(task);
   } catch (err) {
@@ -95,6 +135,18 @@ router.delete('/:id', auth, async (req, res) => {
 
     if (task.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'Not authorized' });
+    }
+
+    if (task.itemIds && task.itemIds.length > 0) {
+      try {
+        const RankingItem = require('../models/RankingItem');
+        await RankingItem.updateMany(
+          { _id: { $in: task.itemIds } },
+          { $set: { taskId: null } }
+        );
+      } catch (err) {
+        console.error('Error updating associated ranking items:', err.message);
+      }
     }
 
     await Task.findByIdAndRemove(req.params.id);
