@@ -201,10 +201,14 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
 
   const [showItemForm, setShowItemForm] = useState(false);
   const [localItems, setLocalItems] = useState<RankingItem[]>([]);
+  const [sortDirection, setSortDirection] = useState<'desc' | 'asc'>('desc');
 
   useEffect(() => {
-    setLocalItems(items);
-  }, [items]);
+    const sortedItems = [...items].sort((a, b) => 
+      sortDirection === 'desc' ? b.value - a.value : a.value - b.value
+    );
+    setLocalItems(sortedItems);
+  }, [items, sortDirection]);
 
   const moveItem = (dragIndex: number, hoverIndex: number) => {
     try {
@@ -271,7 +275,7 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
       
       updatedItems[itemIndex] = { ...item, value: newValue };
       
-      updatedItems.sort((a, b) => b.value - a.value);
+      updatedItems.sort((a, b) => sortDirection === 'desc' ? b.value - a.value : a.value - b.value);
       
       const valueMap = new Map<number, string[]>();
       
@@ -344,7 +348,7 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
               }
             }
             
-            updatedItems.sort((a, b) => b.value - a.value);
+            updatedItems.sort((a, b) => sortDirection === 'desc' ? b.value - a.value : a.value - b.value);
           }
         } 
         
@@ -468,10 +472,17 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
           </button>
           <button
             onClick={handleResetValues}
-            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded"
+            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded mr-2"
             disabled={localItems.length < 2}
           >
             Reset Values
+          </button>
+          <button
+            onClick={() => setSortDirection(sortDirection === 'desc' ? 'asc' : 'desc')}
+            className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-1 px-3 rounded"
+            title={`Sort ${sortDirection === 'desc' ? 'Ascending' : 'Descending'}`}
+          >
+            Sort: {sortDirection === 'desc' ? 'Highest First ↓' : 'Lowest First ↑'}
           </button>
         </div>
         <p className="text-sm text-gray-600">
