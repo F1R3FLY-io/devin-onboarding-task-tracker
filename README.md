@@ -7,8 +7,10 @@ A full-stack task management application with user authentication, built using t
 - User authentication (register, login, logout)
 - Create, read, update, and delete tasks
 - Each task includes: `title`, `description`, `due date`, and `status` (`pending` / `completed`)
+- Priority arrays for organizing and ranking items by value
+- Bidirectional navigation between tasks, priority arrays, and line items
 - Users can only see and manage their own tasks
-- Responsive UI with Tailwind CSS
+- Responsive UI with Tailwind CSS and dark mode support
 
 ## 🧰 Tech Stack
 
@@ -26,6 +28,13 @@ A full-stack task management application with user authentication, built using t
 - [x] Edit existing task
 - [x] Delete task
 - [x] Mark task as completed or pending
+- [x] Create and manage priority arrays
+- [x] Add and rank items within priority arrays
+- [x] Associate tasks with priority arrays and line items
+- [x] Bidirectional navigation with animated scrolling
+- [x] In-place editing of priority array titles
+- [x] Dark mode/light mode toggle with system preference detection
+- [x] Modern UI with glassmorphism effects and rounded corners
 
 ## 🏗️ Project Structure
 
