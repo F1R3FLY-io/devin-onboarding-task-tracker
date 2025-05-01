@@ -9,30 +9,30 @@ All required features have been implemented and committed to the repository:
    - Users can toggle task status (pending/completed) without entering edit mode
    - Commit: "Add task status toggle functionality to TaskItem component"
 
-2. **List Renaming Functionality**
+2. **Priority Array Renaming Functionality**
    - Added to RankingLists component
-   - Users can rename lists directly from the list view
-   - Commit: "Add list renaming functionality to RankingLists component"
+   - Users can rename priority arrays directly from the array view
+   - Commit: "Add priority array renaming functionality to RankingLists component"
 
 3. **Searchable Task Dropdown**
    - Added to RankingItemForm component
-   - Users can search for tasks to associate with ranking items
+   - Users can search for tasks to associate with priority array items
    - Commit: "Add searchable task dropdown to RankingItemForm component"
 
-4. **List Associations in TaskForm**
-   - Updated TaskForm to support list associations
-   - Users can associate tasks with multiple lists
-   - Commit: "Add list associations support to TaskForm component"
+4. **Priority Array Associations in TaskForm**
+   - Updated TaskForm to support priority array associations
+   - Users can associate tasks with multiple priority arrays
+   - Commit: "Add priority array associations support to TaskForm component"
 
 5. **Task Model Updates**
    - Added listIds field to Task model
-   - Supports storing list associations in the database
-   - Commit: "Add listIds field to Task model for list associations"
+   - Supports storing priority array associations in the database
+   - Commit: "Add listIds field to Task model for priority array associations"
 
 6. **Task Routes Updates**
-   - Updated to handle list associations
-   - Supports CRUD operations with list associations
-   - Commit: "Update task routes to handle list associations"
+   - Updated to handle priority array associations
+   - Supports CRUD operations with priority array associations
+   - Commit: "Update task routes to handle priority array associations"
 
 7. **Hide Vestigial Mode Field**
    - Removed mode field from RankingListForm UI
@@ -53,11 +53,11 @@ This indicates that MongoDB is not running or not accessible, which prevents ful
 Based on code review, all implemented features meet the requirements:
 
 1. The TaskItem component now includes a status toggle button that updates the task status without requiring edit mode.
-2. The RankingLists component now supports renaming lists directly from the list view.
+2. The RankingLists component now supports renaming priority arrays directly from the array view.
 3. The RankingItemForm component now includes a searchable dropdown for associating tasks.
-4. The TaskForm component now supports associating tasks with multiple lists through a searchable multi-select dropdown.
-5. The Task model now includes a listIds field for storing list associations.
-6. The task routes now handle list associations for all CRUD operations.
+4. The TaskForm component now supports associating tasks with multiple priority arrays through a searchable multi-select dropdown.
+5. The Task model now includes a listIds field for storing priority array associations.
+6. The task routes now handle priority array associations for all CRUD operations.
 7. The vestigial mode field has been hidden from the RankingListForm UI.
 
 ## Next Steps
