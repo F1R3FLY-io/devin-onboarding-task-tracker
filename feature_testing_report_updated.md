@@ -11,12 +11,12 @@ This report documents the testing of the enhanced features implemented in the Ta
 
 ## Features Verified Through Code Examination
 
-### 1. In-place List Title Editing in Main View
+### 1. In-place Priority Array Title Editing in Main View
 - **Status**: Implemented ✅
 - **Files**: 
   - `ValueRank.tsx` (lines 62-86 and 213-252)
 - **Implementation Details**:
-  - Added edit mode toggle for list title in main view
+  - Added edit mode toggle for priority array title in main view
   - Implemented save and cancel functionality
   - Added keyboard shortcuts (Enter to save, Escape to cancel)
 
@@ -30,7 +30,7 @@ This report documents the testing of the enhanced features implemented in the Ta
   - Implemented navigation between associated items
   - Added visual indicators for associations
 
-### 3. Sorting Options for Lists and Tasks
+### 3. Sorting Options for Priority Arrays and Tasks
 - **Status**: Implemented ✅
 - **Files**: 
   - `RankingItems.tsx` (lines 204-211 and 480-486)
@@ -45,7 +45,7 @@ This report documents the testing of the enhanced features implemented in the Ta
   - `TaskItem.tsx` (lines 84-100)
   - `Task.js` (model updated to support itemIds)
 - **Implementation Details**:
-  - Added support for associating tasks with specific ranking items
+  - Added support for associating tasks with specific priority array items
   - Implemented visual display of associated items
   - Updated backend routes to handle item associations
 
