@@ -35,13 +35,13 @@ This document tracks the features that have been implemented, are in progress, a
   - [ ] Navigate from line items to associated tasks
   - [ ] Testing Status: ❌ Implementation incomplete
 
-- [ ] **UI Enhancements**
-  - [x] Responsive design with Tailwind CSS
-  - [x] Dark mode/light mode toggle
-  - [ ] Tab-like navigation with diagonal sides (folder tab appearance)
-  - [ ] Large rounded edges on UI elements
-  - [ ] Subtle drop shadows with large blur and light alpha
-  - [ ] Testing Status: ⚠️ Partially implemented
+## 🔜 Planned Features
+
+- [ ] **Task Filtering by Status**
+  - [ ] Filter tasks by completed status
+  - [ ] Filter tasks by pending status
+  - [ ] Option to view all tasks regardless of status
+  - [ ] Testing Status: 🚫 Not started
 
 ## 🐛 Known Issues
 
