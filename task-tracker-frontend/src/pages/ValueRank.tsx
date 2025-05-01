@@ -170,12 +170,12 @@ const ValueRank = () => {
       
       <div className="md:col-span-1">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">Your Lists</h2>
+          <h2 className="text-2xl font-bold">Your Priority Arrays</h2>
           <button
             onClick={toggleListForm}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded"
           >
-            {showListForm ? 'Cancel' : 'Add List'}
+            {showListForm ? 'Cancel' : 'Add Priority Array'}
           </button>
         </div>
         
@@ -184,16 +184,16 @@ const ValueRank = () => {
         {rankingLoading ? (
           <div className="text-center py-4">
             <div className="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500 mb-2"></div>
-            <p>Loading lists...</p>
+            <p>Loading priority arrays...</p>
           </div>
         ) : lists.length === 0 ? (
           <div className="bg-gray-100 p-4 rounded-lg text-center">
-            <p className="mb-2">You don't have any lists yet.</p>
+            <p className="mb-2">You don't have any priority arrays yet.</p>
             <button
               onClick={toggleListForm}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded"
             >
-              Create Your First List
+              Create Your First Priority Array
             </button>
           </div>
         ) : (
@@ -245,10 +245,10 @@ const ValueRank = () => {
               </div>
             )}
             <p className="mb-4 text-gray-600">
-              Higher values (0-100) mean higher rankings
+              Higher values (0-100) indicate higher priority
             </p>
             <div className="mb-4 bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded text-sm">
-              <p><strong>How it works:</strong></p>
+              <p><strong>How Priority Arrays Work:</strong></p>
               <ul className="list-disc pl-5 mt-1">
                 <li>Items are automatically sorted by value (highest at top)</li>
                 <li>Each item must have a unique value between 0-100</li>
@@ -261,8 +261,8 @@ const ValueRank = () => {
           </>
         ) : (
           <div className="bg-gray-100 p-6 rounded-lg text-center">
-            <h3 className="text-xl mb-2">No List Selected</h3>
-            <p>Select a list from the sidebar or create a new one to get started.</p>
+            <h3 className="text-xl mb-2">No Priority Array Selected</h3>
+            <p>Select a priority array from the sidebar or create a new one to get started.</p>
           </div>
         )}
       </div>

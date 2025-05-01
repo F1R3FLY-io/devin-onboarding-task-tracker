@@ -61,7 +61,7 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
       {/* Display associated lists */}
       {associatedLists.length > 0 && (
         <div className="mb-3">
-          <p className="text-sm text-gray-700 mb-1"><strong>Associated Lists:</strong></p>
+          <p className="text-sm text-gray-700 mb-1"><strong>Associated Priority Arrays:</strong></p>
           <div className="flex flex-wrap gap-1">
             {associatedLists.map(list => (
               <button 
@@ -71,7 +71,7 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
                   setCurrentList(list);
                   navigate('/valuerank');
                 }}
-                title={`View ${list.name} list`}
+                title={`View ${list.name} priority array`}
               >
                 {list.name}
                 <span className="ml-1 text-blue-600">→</span>
@@ -90,7 +90,7 @@ const TaskItem: React.FC<TaskProps> = ({ task }) => {
               <div 
                 key={item._id} 
                 className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded flex items-center"
-                title={`Item from ${lists.find(l => l._id === item.list)?.name || 'Unknown list'}`}
+                title={`Item from ${lists.find(l => l._id === item.list)?.name || 'Unknown priority array'}`}
               >
                 {item.text} (Value: {item.value})
               </div>

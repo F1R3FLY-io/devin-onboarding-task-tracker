@@ -62,7 +62,7 @@ const RankingListForm: React.FC<RankingListFormProps> = ({ onClose }) => {
 
   return (
     <form onSubmit={onSubmit} className="bg-white shadow-md rounded px-6 pt-4 pb-6 mb-4">
-      <h2 className="text-xl font-bold mb-4">{currentList ? 'Edit List' : 'Add List'}</h2>
+      <h2 className="text-xl font-bold mb-4">{currentList ? 'Edit Priority Array' : 'Add Priority Array'}</h2>
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
           Name
@@ -73,7 +73,7 @@ const RankingListForm: React.FC<RankingListFormProps> = ({ onClose }) => {
           value={name}
           onChange={onChange}
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          placeholder="List Name"
+          placeholder="Priority Array Name"
           required
         />
       </div>
@@ -91,7 +91,7 @@ const RankingListForm: React.FC<RankingListFormProps> = ({ onClose }) => {
           type="submit"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
-          {currentList ? 'Update List' : 'Add List'}
+          {currentList ? 'Update Priority Array' : 'Add Priority Array'}
         </button>
         {currentList && (
           <button

@@ -19,7 +19,7 @@ const Navbar = () => {
         <Link to="/" className="text-white hover:text-gray-300">Tasks</Link>
       </li>
       <li className="mr-4">
-        <Link to="/valuerank" className="text-white hover:text-gray-300">ValueRank</Link>
+        <Link to="/valuerank" className="text-white hover:text-gray-300">Priority Array</Link>
       </li>
       <li className="mr-4">Hello {user && user.name}</li>
       <li>

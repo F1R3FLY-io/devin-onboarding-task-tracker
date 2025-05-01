@@ -21,7 +21,7 @@ const RankingLists: React.FC<RankingListsProps> = ({ lists }) => {
 
   const saveListName = (list: RankingList) => {
     if (editName.trim() === '') {
-      alert('List name cannot be empty');
+      alert('Priority array name cannot be empty');
       return;
     }
 
@@ -40,7 +40,7 @@ const RankingLists: React.FC<RankingListsProps> = ({ lists }) => {
   if (lists.length === 0) {
     return (
       <div className="bg-gray-100 p-4 rounded-lg text-center">
-        <p>No lists found. Create a new list to get started.</p>
+        <p>No priority arrays found. Create a new priority array to get started.</p>
       </div>
     );
   }
@@ -99,7 +99,7 @@ const RankingLists: React.FC<RankingListsProps> = ({ lists }) => {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (window.confirm('Are you sure you want to delete this list?')) {
+                  if (window.confirm('Are you sure you want to delete this priority array?')) {
                     deleteList(list._id);
                     clearCurrentList();
                   }
