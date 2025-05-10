@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RankingList } from '../../context/ranking/RankingContext';
 import RankingContext from '../../context/ranking/RankingContext';
@@ -16,6 +16,21 @@ const RankingLists: React.FC<RankingListsProps> = ({ lists }) => {
   
   const [editingListId, setEditingListId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
+
+  useEffect(() => {
+    if (taskContext) {
+      taskContext.getTasks();
+    }
+  }, [taskContext]);
+  
+  useEffect(() => {
+    const loadTasks = async () => {
+      if (taskContext) {
+        await taskContext.getTasks();
+      }
+    };
+    loadTasks();
+  }, []);
 
   const startEditing = (list: RankingList, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -42,10 +57,17 @@ const RankingLists: React.FC<RankingListsProps> = ({ lists }) => {
   };
   
   const getAssociatedTasks = (listId: string) => {
-    if (!taskContext?.tasks) return [];
-    return taskContext.tasks.filter(task => 
-      task.listIds && task.listIds.includes(listId)
-    );
+    if (!taskContext?.tasks || taskContext.tasks.length === 0) {
+      return [];
+    }
+    
+    return taskContext.tasks.filter(task => {
+      if (!task.listIds) return false;
+      
+      return task.listIds.some(id => 
+        id === listId || id.toString() === listId
+      );
+    });
   };
 
   if (lists.length === 0) {
@@ -125,7 +147,20 @@ const RankingLists: React.FC<RankingListsProps> = ({ lists }) => {
           
           {/* Associated Tasks Section - Always show */}
           <div className="mt-4 p-3 bg-blue-50/70 dark:bg-blue-900/20 rounded-xl backdrop-blur-sm">
-            <p className="text-sm text-gray-700 dark:text-gray-300 mb-2"><strong>🔗 Associated Tasks:</strong></p>
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-gray-700 dark:text-gray-300 mb-2"><strong>🔗 Associated Tasks:</strong></p>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/');
+                  localStorage.setItem('associateListId', list._id);
+                }}
+                className="text-xs bg-green-100 dark:bg-green-800/40 text-green-800 dark:text-green-200 px-2 py-1 rounded-lg"
+                title="Create new task and associate with this array"
+              >
+                + Add Task
+              </button>
+            </div>
             {getAssociatedTasks(list._id).length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {getAssociatedTasks(list._id).map(task => (

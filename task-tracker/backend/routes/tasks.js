@@ -48,6 +48,18 @@ router.post(
 
       const task = await newTask.save();
       
+      if (listIds && listIds.length > 0) {
+        try {
+          const RankingList = require('../models/RankingList');
+          await RankingList.updateMany(
+            { _id: { $in: listIds } },
+            { $addToSet: { taskIds: task._id } }
+          );
+        } catch (err) {
+          console.error('Error updating associated ranking lists:', err.message);
+        }
+      }
+      
       if (itemIds && itemIds.length > 0) {
         try {
           await RankingItem.updateMany(
@@ -96,6 +108,31 @@ router.put('/:id', auth, async (req, res) => {
       { new: true }
     );
     
+    if (listIds) {
+      try {
+        const RankingList = require('../models/RankingList');
+        const originalListIds = originalTask.listIds || [];
+        
+        const removedListIds = originalListIds.filter(id => !listIds.includes(id.toString()));
+        if (removedListIds.length > 0) {
+          await RankingList.updateMany(
+            { _id: { $in: removedListIds } },
+            { $pull: { taskIds: task._id } }
+          );
+        }
+        
+        const newListIds = listIds.filter(id => !originalListIds.map(oid => oid.toString()).includes(id));
+        if (newListIds.length > 0) {
+          await RankingList.updateMany(
+            { _id: { $in: newListIds } },
+            { $addToSet: { taskIds: task._id } }
+          );
+        }
+      } catch (err) {
+        console.error('Error updating associated ranking lists:', err.message);
+      }
+    }
+    
     if (itemIds) {
       try {
         const removedItemIds = originalItemIds.filter(id => !itemIds.includes(id.toString()));
@@ -137,6 +174,18 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 
+    if (task.listIds && task.listIds.length > 0) {
+      try {
+        const RankingList = require('../models/RankingList');
+        await RankingList.updateMany(
+          { _id: { $in: task.listIds } },
+          { $pull: { taskIds: task._id } }
+        );
+      } catch (err) {
+        console.error('Error updating associated ranking lists:', err.message);
+      }
+    }
+    
     if (task.itemIds && task.itemIds.length > 0) {
       try {
         const RankingItem = require('../models/RankingItem');

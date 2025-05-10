@@ -177,6 +177,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const filteredTasks = state.tasks.filter(task => {
     if (state.filter === 'all') return true;
+    if (!task.status) return false; // Handle case where status is undefined
     return task.status === state.filter;
   });
 

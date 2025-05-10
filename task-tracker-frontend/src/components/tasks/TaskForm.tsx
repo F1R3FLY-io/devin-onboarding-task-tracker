@@ -5,8 +5,12 @@ import RankingContext from '../../context/ranking/RankingContext';
 const TaskForm = () => {
   const taskContext = useContext(TaskContext);
   const rankingContext = useContext(RankingContext);
-  const { lists, items } = rankingContext;
+  const { lists, items, getLists, getItems } = rankingContext;
   const { addTask, updateTask, current, clearCurrent } = taskContext;
+  
+  useEffect(() => {
+    getLists();
+  }, []);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [itemSearchTerm, setItemSearchTerm] = useState('');
@@ -19,6 +23,17 @@ const TaskForm = () => {
     listIds: [] as string[],
     itemIds: [] as string[]
   });
+
+  useEffect(() => {
+    const associateListId = localStorage.getItem('associateListId');
+    if (associateListId) {
+      setTask(prevTask => ({
+        ...prevTask,
+        listIds: [...prevTask.listIds, associateListId]
+      }));
+      localStorage.removeItem('associateListId');
+    }
+  }, []);
 
   useEffect(() => {
     if (current !== null) {

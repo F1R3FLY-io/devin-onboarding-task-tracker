@@ -137,10 +137,20 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
             <button 
               className="text-xs bg-blue-100/80 dark:bg-blue-800/50 text-blue-800 dark:text-blue-200 px-3 py-1.5 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-700/60 transition-colors flex items-center shadow-soft"
               onClick={() => {
-                const task = taskContext?.tasks.find(t => t._id === item.taskId);
-                if (task) {
-                  taskContext?.setCurrent(task);
-                  navigate('/');
+                if (!taskContext?.tasks || taskContext.tasks.length === 0) {
+                  taskContext.getTasks().then(() => {
+                    const task = taskContext.tasks.find(t => t._id === item.taskId);
+                    if (task) {
+                      taskContext.setCurrent(task);
+                      navigate('/');
+                    }
+                  });
+                } else {
+                  const task = taskContext.tasks.find(t => t._id === item.taskId);
+                  if (task) {
+                    taskContext.setCurrent(task);
+                    navigate('/');
+                  }
                 }
               }}
               title="View associated task"
@@ -149,7 +159,16 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
               <span className="ml-1 text-blue-600 dark:text-blue-300">→</span>
             </button>
           ) : (
-            <span className="text-xs text-gray-500 dark:text-gray-400">No associated task</span>
+            <button
+              className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(item);
+              }}
+              title="Associate with a task"
+            >
+              + Link to task
+            </button>
           )}
         </div>
       </div>
@@ -205,6 +224,21 @@ const RankingItems: React.FC<RankingItemsProps> = ({ items, listId, mode }) => {
     addItemBetween,
     addItem
   } = rankingContext;
+  
+  useEffect(() => {
+    if (taskContext) {
+      taskContext.getTasks();
+    }
+  }, [taskContext]);
+  
+  useEffect(() => {
+    const loadTasks = async () => {
+      if (taskContext) {
+        await taskContext.getTasks();
+      }
+    };
+    loadTasks();
+  }, []);
   
   const scrollToItem = (itemId: string) => {
     setTimeout(() => {

@@ -23,6 +23,12 @@ const RankingItemForm: React.FC<RankingItemFormProps> = ({ listId, onClose }) =>
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
+    if (taskContext) {
+      taskContext.getTasks();
+    }
+  }, [taskContext]);
+
+  useEffect(() => {
     if (currentItem !== null) {
       setItem({
         text: currentItem.text,
@@ -146,13 +152,17 @@ const RankingItemForm: React.FC<RankingItemFormProps> = ({ listId, onClose }) =>
             ).length + 1)}
           >
             <option value="">None</option>
-            {tasks?.filter(task => 
-              searchTerm === '' || task.title.toLowerCase().includes(searchTerm.toLowerCase())
-            ).map(task => (
-              <option key={task._id} value={task._id}>
-                {task.title}
-              </option>
-            ))}
+            {tasks && tasks.length > 0 ? (
+              tasks.filter(task => 
+                searchTerm === '' || task.title.toLowerCase().includes(searchTerm.toLowerCase())
+              ).map(task => (
+                <option key={task._id} value={task._id}>
+                  {task.title}
+                </option>
+              ))
+            ) : (
+              <option disabled>No tasks available - create tasks first</option>
+            )}
           </select>
           <p className="text-xs text-gray-500 mt-1">
             Type in the search box to filter tasks
